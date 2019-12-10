@@ -15,7 +15,7 @@ export class ServerAPI {
   constructor() {
     this.apiUrl =
       process.env.NODE_ENV === 'production'
-        ? `https://api.${window.location.origin}/api`
+        ? `https://api.${window.location.hostname}/api`
         : `http://${DEBUG_HOSTNAME}:${DEBUG_PORT}/api`;
   }
 
