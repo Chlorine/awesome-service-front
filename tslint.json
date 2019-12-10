@@ -1,0 +1,23 @@
+{
+  "rulesDirectory": [],
+  "defaultSeverity": "warn",
+  "extends": [
+    "tslint:recommended",
+    "tslint-config-standard",
+    "tslint-react",
+    "tslint-config-prettier"
+  ],
+  "jsRules": {
+  },
+  "rules": {
+    "interface-over-type-literal": false,
+    "object-literal-sort-keys": false,
+    "ordered-imports": false,
+    "member-access": false,
+    "jsx-no-lambda": false,
+    "no-console": false,
+    "jsx-boolean-value": false,
+    "prefer-for-of": false,
+    "member-ordering": false
+  }
+}
