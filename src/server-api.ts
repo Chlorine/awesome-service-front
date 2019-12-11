@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 
-import { GenericObject } from './common-front';
-import { ApiActions, Params, Results } from './common-api';
+import { GenericObject } from './common-interfaces/common-front';
+import { ApiActions, Params, Results } from './common-interfaces/common-api';
 import { Utils } from './utils';
 
 const DEBUG_DELAY = 0;
 
-export const DEBUG_PORT = 3301;
-export const DEBUG_HOSTNAME = window.location.hostname;
+export const DEV_API_PORT = Number(process.env.REACT_APP_DEV_API_PORT || 3301);
+export const DEV_API_HOSTNAME = window.location.hostname;
 
 export class ServerAPI {
   private readonly apiUrl: string;
@@ -16,7 +16,7 @@ export class ServerAPI {
     this.apiUrl =
       process.env.NODE_ENV === 'production'
         ? `https://api.${window.location.hostname}/api`
-        : `http://${DEBUG_HOSTNAME}:${DEBUG_PORT}/api`;
+        : `http://${DEV_API_HOSTNAME}:${DEV_API_PORT}/api`;
   }
 
   async executeRequest(
@@ -72,7 +72,7 @@ export class ServerAPI {
     if (params.__delay) {
       await Utils.delay(params.__delay);
     }
-    return this.executeRequest({ action, ...(params as any) });
+    return this.executeRequest({ action, ...(params as any) }, '/execute', 'POST');
   }
 }
 
