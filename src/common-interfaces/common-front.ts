@@ -5,3 +5,9 @@ export type Dictionary<T> = {
 };
 
 export type GenericObject = Dictionary<any>;
+
+export interface IUser {
+  username: string;
+  id: string;
+}
+
