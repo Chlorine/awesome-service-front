@@ -1,8 +1,11 @@
+import { MinimalVisitorInfo } from './common-front';
+
+declare type NoParams = {};
+declare type OnlySuccess = {};
+
 export type ApiActions = {
   doSomething: {
-    params: {
-      // none
-    };
+    params: NoParams;
     results: {
       code: number;
     };
@@ -11,8 +14,16 @@ export type ApiActions = {
     params: {
       incomingToken: string;
     };
+    results: OnlySuccess;
+  };
+  registerVisitor: {
+    params: {
+      visitor: MinimalVisitorInfo;
+      phone: string;
+      email: string;
+    };
     results: {
-      // just 'success'
+      visitorId: string;
     };
   };
 };

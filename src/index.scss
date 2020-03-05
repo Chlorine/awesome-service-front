@@ -1,6 +1,127 @@
+/**
+* Красота спасёт мир (но это не точно)
+**/
+
+$custom-control-gutter:          0.75rem !default;
+$modal-header-padding-y:            0.75rem !default;
+$modal-header-padding-x:            0.75rem !default;
+
+$small-font-size:             90% !default;
+
+@import '~bootstrap/scss/bootstrap.scss';
+
+$roboto-condensed: "Roboto-Condensed", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+$tscontr-main-mt: 62px;
+
+html, body {
+  // min-height: 100vh;
+}
+
 body {
-  margin: 0;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  // min-height: 100vh;
+
+  -ms-flex-direction: column !important;
+  flex-direction: column !important;
+
   font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+}
+
+.tscontr-navbar {
+  font-family: $roboto-condensed;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+
+.tscontr-header {
+  font-family: $roboto-condensed;
+}
+
+.tscontr-main {
+  margin-top: $tscontr-main-mt;
+}
+
+.tscontr-footer {
+  background-color: #fafafa;
+  border-top: 1px solid #e7e7e7;
+}
+
+.tscontr-form-label {
+  text-align: left !important;
+}
+
+@media (min-width: 576px) {
+  .tscontr-form-label {
+    text-align: right !important;
+  }
+}
+
+.card-title {
+  margin-bottom: 0 !important;
+  font-family: $roboto-condensed;
+}
+
+.modal-title {
+  font-family: $roboto-condensed;
+}
+
+.col-form-label {
+  font-size: 13px;
+}
+
+.cool-badge {
+  font-size: 100%;
+  font-family: $roboto-condensed;
+  font-weight: 400;
+}
+
+.smaller {
+  font-size: $small-font-size !important;
+}
+
+.link-like {
+  color: $link-color;
+}
+
+.text-grayed {
+  color: #7d868e !important;
+}
+
+.link-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+}
+
+.link-button:hover,
+.link-button:focus {
+  text-decoration: underline;
+}
+
+.wide-modal {
+  min-width: 90% !important;
+}
+
+.medium-wide-modal {
+  min-width: 70% !important;
+}
+
+.rounded-top-only {
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.object-id {
+  /*cursor: pointer;*/
+  font-family: monospace;
+  background-color: #d7f7ff;
+  border-radius: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border: 1px solid $link-color;
 }

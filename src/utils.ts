@@ -1,3 +1,5 @@
+import * as yup from 'yup';
+
 export class Utils {
   static isInteger(nVal: any): boolean {
     return (
@@ -49,3 +51,46 @@ export class Utils {
     });
   }
 }
+
+export type GetElementType<T extends Array<any>> = T extends (infer U)[]
+  ? U
+  : never;
+
+export class LocalStorageHelper<PN extends string = string> {
+  constructor(public namePrefix: string) {}
+
+  private makeParamName(name: PN) {
+    return `${this.namePrefix}_${name}`;
+  }
+
+  get(paramName: PN) {
+    return Utils.localStorageGet(this.makeParamName(paramName));
+  }
+
+  set(paramName: PN, value: any) {
+    Utils.localStorageSet(this.makeParamName(paramName), value);
+    return this;
+  }
+}
+
+export const YupSchemes = {
+  stringField: (
+    maxLength: number,
+    required: 'required' | 'optional' = 'required',
+  ) => {
+    // TODO: уразуметь как они цепочаться
+    return required === 'required'
+      ? yup
+          .string()
+          .required()
+          .max(maxLength)
+          .trim()
+      : yup
+          .string()
+          .max(maxLength)
+          .trim();
+  },
+  email: (maxLength: number) => {
+    return yup.string().required().max(maxLength).email().trim();
+  }
+};
