@@ -163,6 +163,16 @@ class MainView extends React.Component<Props, State> {
                 </span>
               </Navbar.Brand>
             </LinkContainer>
+            <ul className="navbar-nav ml-auto">
+              <li className="nav-item">
+                <Button
+                  variant="secondary"
+                  className="secondary-light pl-1 pr-1 pt-1 pb-1"
+                >
+                  <span className="flag-icon flag-icon-ru" />
+                </Button>
+              </li>
+            </ul>
           </Navbar>
         </header>
         {/* ---- */}

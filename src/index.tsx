@@ -12,6 +12,7 @@ import * as serviceWorker from './serviceWorker';
 import 'font-awesome/css/font-awesome.css';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import 'roboto-fontface/css/roboto-condensed/roboto-condensed-fontface.css';
+import 'flag-icon-css/css/flag-icon.css';
 
 import './index.scss';
 

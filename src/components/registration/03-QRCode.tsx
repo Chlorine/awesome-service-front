@@ -61,6 +61,7 @@ class Page03_QRCode extends React.Component<Props, State> {
 
     try {
       const { baseInfo, phone, email } = visitorInfo;
+
       const { visitorId } = await serverApi.execute('registerVisitor', {
         visitor: baseInfo,
         email,
@@ -75,8 +76,8 @@ class Page03_QRCode extends React.Component<Props, State> {
 
       // vCard.version = '3';
 
-      console.log(vCard.getMajorVersion());
-      console.log(JSON.stringify(vCard, null, 2));
+      // console.log(vCard.getMajorVersion());
+      // console.log(JSON.stringify(vCard, null, 2));
 
       vCard.firstName = baseInfo.firstName;
       vCard.middleName = baseInfo.middleName;
@@ -90,7 +91,7 @@ class Page03_QRCode extends React.Component<Props, State> {
       }
 
       if (email) {
-        vCard.email = email;
+        vCard.workEmail = email;
       }
 
       vCard.version = '3.0';
@@ -101,7 +102,10 @@ class Page03_QRCode extends React.Component<Props, State> {
 
       console.log(vCardData);
 
+      // const simpleString = `${baseInfo.firstName};${baseInfo.middleName};${baseInfo.lastName};${baseInfo.companyName};${baseInfo.position};${phone};${email}`;
+
       this.setState({ qrCodeValue: vCardData });
+      // this.setState({ qrCodeValue: simpleString });
     } catch (err) {
       this.setState({ errorMsg: err.message });
     }
