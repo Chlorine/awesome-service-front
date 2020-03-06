@@ -4,7 +4,8 @@ import React from 'react';
 import { Button, Modal, Row, Col, Image } from 'react-bootstrap';
 import { Utils } from '../../utils';
 
-import THE_IMAGE from './../../images/kumamon.png';
+// import THE_IMAGE from './../../images/kumamon.png';
+import THE_IMAGE from './../../images/iconfinder_qrcode_2893873.svg';
 
 export type Props = {
   visible: boolean;
@@ -46,11 +47,20 @@ class ContactInfoExplainModal extends React.Component<Props, State> {
         animation={false}
         backdrop={true}
       >
-        <Modal.Header closeButton={true}>
-          <Modal.Title>Что значит зачем?</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="pt-3 pb-3">
-          <Image fluid={true} src={THE_IMAGE} />
+        <Modal.Body className="pt-5 pb-3">
+          <Row>
+            <Col sm={12} className="d-flex align-items-center flex-column">
+              <div>
+                <Image src={THE_IMAGE} />
+              </div>
+            </Col>
+          </Row>
+          <Row className="pt-2">
+            <Col className="text-center">
+              Вы сможете мгновенно обмениваться контактными данными с
+              посетителями и участниками выставки
+            </Col>
+          </Row>
         </Modal.Body>
         <Modal.Footer className="d-flex justify-content-center">
           <Button

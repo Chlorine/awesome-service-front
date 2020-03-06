@@ -73,6 +73,11 @@ class Page03_QRCode extends React.Component<Props, State> {
 
       const vCard = vCardFactory();
 
+      // vCard.version = '3';
+
+      console.log(vCard.getMajorVersion());
+      console.log(JSON.stringify(vCard, null, 2));
+
       vCard.firstName = baseInfo.firstName;
       vCard.middleName = baseInfo.middleName;
       vCard.lastName = baseInfo.lastName;
@@ -88,7 +93,11 @@ class Page03_QRCode extends React.Component<Props, State> {
         vCard.email = email;
       }
 
-      const vCardData = vCard.getFormattedString();
+      vCard.version = '3.0';
+
+      // let vCardData = vCard.getFormattedString();
+
+      let vCardData = vCard.getFormattedString().replace(/;CHARSET=UTF-8/g, '');
 
       console.log(vCardData);
 
