@@ -3,9 +3,10 @@ import { connect } from 'react-redux';
 // eslint-disable-next-line
 import { Dispatch, bindActionCreators } from 'redux';
 import { Redirect } from 'react-router';
-// eslint-disable-next-line
-import { Button, Container, Form, Nav, Navbar } from 'react-bootstrap';
+import { Button, Container, Nav, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import classNames from 'classnames';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
 import { AppState } from '../store/state';
 // eslint-disable-next-line
@@ -17,6 +18,7 @@ import { WSHelper } from '../server-ws';
 
 import './MainView.scss';
 import { CurrentBreakpoint } from './common';
+// import produce from 'immer';
 
 const mapStateToProps = (state: AppState) => {
   return {
@@ -30,10 +32,12 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 };
 
 declare type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+  ReturnType<typeof mapDispatchToProps> &
+  WithTranslation;
 
 declare type State = {
   wsConnected: boolean;
+  language: 'ru' | 'en';
 };
 
 class MainView extends React.Component<Props, State> {
@@ -41,6 +45,7 @@ class MainView extends React.Component<Props, State> {
 
   state: State = {
     wsConnected: false,
+    language: 'ru',
   };
 
   componentDidMount() {
@@ -54,9 +59,9 @@ class MainView extends React.Component<Props, State> {
       // });
     };
 
-    // this.wsHelper.subscribeTo('infoEvent', ({ event }) =>
-    //   // this.props.infoEventsActions.newEventReceived(event),
-    // );
+    this.wsHelper.subscribeTo('infoEvent', ({ event }) => {
+      //this.props.infoEventsActions.newEventReceived(event),
+    });
   }
 
   componentWillUnmount() {
@@ -101,13 +106,14 @@ class MainView extends React.Component<Props, State> {
   }
 
   renderFooter() {
-    // const { auth } = this.props;
+    const { t } = this.props;
+
     return (
       <footer className="tscontr-footer py-1 fixed-bottom">
         <Container fluid={true}>
           <div style={{ lineHeight: '110%' }}>
             <small>
-              &copy; Тикет Софт 2020{' '}
+              &copy; {t('ticketSoft')} 2020{' '}
               <a
                 href="http://www.soft.ru"
                 target="_blank"
@@ -122,9 +128,23 @@ class MainView extends React.Component<Props, State> {
     );
   }
 
+  toggleLanguage = (ev: React.SyntheticEvent<HTMLButtonElement>) => {
+    ev.preventDefault();
+
+    const { i18n } = this.props;
+    const { language } = this.state;
+
+    const lang = language === 'ru' ? 'en' : 'ru';
+
+    i18n
+      .changeLanguage(lang)
+      .then(() => this.setState({ language: lang }))
+      .catch(console.error);
+  };
+
   render() {
-    // eslint-disable-next-line
-    const { wsConnected } = this.state;
+    const { language } = this.state;
+    const { t } = this.props;
 
     const searchPrefix = '?redirectTo=';
     const { location } = this.props.router;
@@ -146,7 +166,7 @@ class MainView extends React.Component<Props, State> {
             expand="sm"
             fixed={'top'}
             collapseOnSelect={true}
-            className="tscontr-navbar--- border-bottom pt-1 pb-1"
+            className="border-bottom pt-1 pb-1"
           >
             <LinkContainer exact to={'/'}>
               <Navbar.Brand>
@@ -156,7 +176,7 @@ class MainView extends React.Component<Props, State> {
 
                 <span className="d-md-inline">
                   {' '}
-                  Регистрация{' '}
+                  {t('webAppTitle')}{' '}
                   <span className="text-danger">
                     <CurrentBreakpoint invisible={true} />
                   </span>{' '}
@@ -168,8 +188,17 @@ class MainView extends React.Component<Props, State> {
                 <Button
                   variant="secondary"
                   className="secondary-light pl-1 pr-1 pt-1 pb-1"
+                  onClick={this.toggleLanguage}
                 >
-                  <span className="flag-icon flag-icon-ru" />
+                  <span className="mr-1 text-uppercase">
+                    {language === 'en' ? 'RU' : 'EN'}
+                  </span>
+                  <span
+                    className={classNames('flag-icon', {
+                      'flag-icon-ru': language === 'en',
+                      'flag-icon-gb': language === 'ru',
+                    })}
+                  />
                 </Button>
               </li>
             </ul>
@@ -188,4 +217,6 @@ class MainView extends React.Component<Props, State> {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MainView);
+export default withTranslation()(
+  connect(mapStateToProps, mapDispatchToProps)(MainView),
+);

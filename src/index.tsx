@@ -9,6 +9,8 @@ import { setLocale as Yup_setLocale } from 'yup';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+import './i18n';
+
 import 'font-awesome/css/font-awesome.css';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import 'roboto-fontface/css/roboto-condensed/roboto-condensed-fontface.css';

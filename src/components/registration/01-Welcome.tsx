@@ -10,6 +10,8 @@ import { VisitorRegForm } from './VisitorRegForm';
 import { MinimalVisitorInfo } from '../../common-interfaces/common-front';
 import { Col, Row } from 'react-bootstrap';
 
+import { WithTranslation, withTranslation } from 'react-i18next';
+
 const mapStateToProps = (state: AppState) => {
   return {
     visitorInfo: state.visitorInfo,
@@ -24,10 +26,12 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 };
 
 declare type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+  ReturnType<typeof mapDispatchToProps> &
+  WithTranslation;
 
 declare type State = {};
 
+// tslint:disable-next-line:class-name
 class Page01_Welcome extends React.Component<Props, State> {
   state: State = {};
 
@@ -36,15 +40,15 @@ class Page01_Welcome extends React.Component<Props, State> {
   };
 
   render() {
-    const { visitorInfo } = this.props;
+    const { t, visitorInfo } = this.props;
 
     return (
       <>
         <Row>
           <Col>
-            <h4>Добро пожаловать!</h4>
+            <h4>{t('welcome.title')}</h4>
 
-            <p className="text-muted">Введите данные для печати бэйджа</p>
+            <p className="text-muted">{t('welcome.subTitle')}</p>
           </Col>
         </Row>
         <Row>
@@ -60,4 +64,6 @@ class Page01_Welcome extends React.Component<Props, State> {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Page01_Welcome);
+export default withTranslation()(
+  connect(mapStateToProps, mapDispatchToProps)(Page01_Welcome),
+);
