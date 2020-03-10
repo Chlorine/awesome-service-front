@@ -108,6 +108,11 @@ class VisitorRegForm extends React.Component<Props, State> {
   });
 
   private inputFields: { [key in keyof FormValues]: InputField } = {
+    lastName: {
+      placeholder: 'page01.inputPlaceholders.lastName',
+      autoComplete: 'given-name',
+      ref: React.createRef<HTMLInputElement>(),
+    },
     firstName: {
       placeholder: 'page01.inputPlaceholders.firstName',
       autoComplete: 'given-name',
@@ -118,11 +123,7 @@ class VisitorRegForm extends React.Component<Props, State> {
       autoComplete: 'additional-name',
       ref: React.createRef<HTMLInputElement>(),
     },
-    lastName: {
-      placeholder: 'page01.inputPlaceholders.lastName',
-      autoComplete: 'given-name',
-      ref: React.createRef<HTMLInputElement>(),
-    },
+
     companyName: {
       placeholder: 'page01.inputPlaceholders.company',
       autoComplete: 'organization',
