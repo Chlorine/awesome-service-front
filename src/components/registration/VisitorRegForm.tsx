@@ -12,6 +12,7 @@ import {
   withTranslation,
   WithTranslation,
 } from 'react-i18next';
+import { WithTranslatedFormErrors } from '../common';
 
 export type Props = {
   handleSubmit: (visitorInfo: MinimalVisitorInfo) => Promise<void>;
@@ -84,7 +85,7 @@ const FormField: React.FC<{
       </InputGroup>
       {touched[fieldName] && errors[fieldName] && (
         <Form.Control.Feedback className="d-block" type="invalid">
-          {errors[fieldName]}
+          {t(errors[fieldName] || '')}
         </Form.Control.Feedback>
       )}
     </Col>
@@ -204,36 +205,38 @@ class VisitorRegForm extends React.Component<Props, State> {
                 // });
 
                 return (
-                  <Form
-                    noValidate
-                    onSubmit={handleSubmit}
-                    onReset={handleReset}
-                  >
-                    {Object.keys(this.inputFields).map((key, index) => {
-                      let fieldName = key as keyof FormValues;
-                      return (
-                        <Form.Group as={Row} key={index}>
-                          <FormField
-                            fieldName={fieldName}
-                            field={this.inputFields[fieldName]}
-                            formikProps={props}
-                          />
-                        </Form.Group>
-                      );
-                    })}
-                    <Form.Group as={Row}>
-                      <Col className="d-flex align-items-center justify-content-start mt-1">
-                        <Button
-                          type="submit"
-                          variant={'primary'}
-                          disabled={isSubmitting}
-                          className=""
-                        >
-                          {t('common.buttons.continue')}
-                        </Button>
-                      </Col>
-                    </Form.Group>
-                  </Form>
+                  <WithTranslatedFormErrors formikProps={props}>
+                    <Form
+                      noValidate
+                      onSubmit={handleSubmit}
+                      onReset={handleReset}
+                    >
+                      {Object.keys(this.inputFields).map((key, index) => {
+                        let fieldName = key as keyof FormValues;
+                        return (
+                          <Form.Group as={Row} key={index}>
+                            <FormField
+                              fieldName={fieldName}
+                              field={this.inputFields[fieldName]}
+                              formikProps={props}
+                            />
+                          </Form.Group>
+                        );
+                      })}
+                      <Form.Group as={Row}>
+                        <Col className="d-flex align-items-center justify-content-start mt-1">
+                          <Button
+                            type="submit"
+                            variant={'primary'}
+                            disabled={isSubmitting}
+                            className=""
+                          >
+                            {t('common.buttons.continue')}
+                          </Button>
+                        </Col>
+                      </Form.Group>
+                    </Form>
+                  </WithTranslatedFormErrors>
                 );
               }}
             />

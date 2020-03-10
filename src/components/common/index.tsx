@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { ReactElement, ReactNode, useEffect } from 'react';
 import { Col, Row, Spinner } from 'react-bootstrap';
+import { useTranslation, WithTranslation } from 'react-i18next';
+import { FormikProps } from 'formik';
 
 export type SmallSpinnerProps = { visible: boolean; className?: string };
 
@@ -85,3 +87,36 @@ export const SimpleCentered: React.FC = props => (
     </Col>
   </Row>
 );
+
+export const WithTranslatedFormErrors: React.FC<{
+  formikProps: FormikProps<any>;
+}> = props => {
+  const { i18n } = useTranslation();
+  const {
+    errors,
+    touched,
+    setFieldTouched,
+    validateField,
+    setFieldValue,
+    values,
+  } = props.formikProps;
+
+  const onLangChanged = (lang: string): void => {
+    console.log('langChanged cb', errors, touched);
+    Object.keys(errors).forEach(
+      fieldName => {
+        if (Object.keys(touched).includes(fieldName)) {
+          setFieldTouched(fieldName);
+        }
+      },
+      [errors],
+    );
+  };
+
+  useEffect(() => {
+    i18n.on('languageChanged', onLangChanged);
+    return () => i18n.off('languageChanged', onLangChanged);
+  });
+
+  return <>{props.children}</>;
+};

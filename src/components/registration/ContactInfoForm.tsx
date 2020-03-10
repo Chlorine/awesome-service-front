@@ -89,7 +89,7 @@ const FormField: React.FC<{
       </InputGroup>
       {touched[fieldName] && errors[fieldName] && (
         <Form.Control.Feedback className="d-block" type="invalid">
-          {errors[fieldName]}
+          {t(errors[fieldName] || '')}
         </Form.Control.Feedback>
       )}
     </Col>
