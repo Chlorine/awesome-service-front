@@ -5,6 +5,11 @@ import * as yup from 'yup';
 import { Formik, FormikActions, FormikProps } from 'formik';
 
 import { YupSchemes } from '../../utils';
+import {
+  useTranslation,
+  WithTranslation,
+  withTranslation,
+} from 'react-i18next';
 
 export type Props = {
   handleSubmit: (email: string, phone: string) => Promise<void>;
@@ -13,7 +18,7 @@ export type Props = {
     email: string;
     phone: string;
   };
-};
+} & WithTranslation;
 
 declare type State = {
   errorMsg: string;
@@ -46,13 +51,15 @@ const FormField: React.FC<{
     errors,
   } = formikProps;
 
+  const { t } = useTranslation();
+
   return (
     <Col>
       <InputGroup>
         <Form.Control
           type="text"
           name={fieldName}
-          placeholder={placeholder}
+          placeholder={t(placeholder)}
           onBlur={handleBlur}
           maxLength={64}
           onChange={handleChange}
@@ -91,27 +98,28 @@ const FormField: React.FC<{
 
 const REGEXP_PHONE = /^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/;
 
-export class ContactInfoForm extends React.Component<Props, State> {
+class ContactInfoForm extends React.Component<Props, State> {
   state: State = {
     errorMsg: '',
   };
 
   private scheme = yup.object().shape<FormValues>({
     email: YupSchemes.email(64),
-    phone: YupSchemes.stringField(64).matches(
-      REGEXP_PHONE,
-      'Некорректный номер телефона',
-    ),
+    // phone: YupSchemes.stringField(64).matches(
+    //   REGEXP_PHONE,
+    //   'Некорректный номер телефона', // TODO: yup localize
+    // ),
+    phone: YupSchemes.stringField(64).matches(REGEXP_PHONE),
   });
 
   private inputFields: { [key in keyof FormValues]: InputField } = {
     phone: {
-      placeholder: 'Телефон',
+      placeholder: 'page02.inputPlaceholders.phone',
       autoComplete: 'tel',
       ref: React.createRef<HTMLInputElement>(),
     },
     email: {
-      placeholder: 'Email',
+      placeholder: 'page02.inputPlaceholders.email',
       autoComplete: 'email',
       ref: React.createRef<HTMLInputElement>(),
     },
@@ -144,7 +152,7 @@ export class ContactInfoForm extends React.Component<Props, State> {
   };
 
   render() {
-    const { initialValues } = this.props;
+    const { initialValues, t } = this.props;
 
     return (
       <>
@@ -181,7 +189,7 @@ export class ContactInfoForm extends React.Component<Props, State> {
                           <Form.Control
                             type="text"
                             name="phone"
-                            placeholder="Телефон"
+                            placeholder={t('page02.inputPlaceholders.phone')}
                             onBlur={handleBlur}
                             maxLength={64}
                             onChange={handleChange}
@@ -244,7 +252,7 @@ export class ContactInfoForm extends React.Component<Props, State> {
                           disabled={isSubmitting}
                           onClick={() => this.props.handleGoBack()}
                         >
-                          Назад
+                          {t('common.buttons.back')}
                         </Button>
                         <Button
                           className="ml-2"
@@ -252,7 +260,7 @@ export class ContactInfoForm extends React.Component<Props, State> {
                           variant={'primary'}
                           disabled={isSubmitting}
                         >
-                          Продолжить
+                          {t('common.buttons.continue')}
                         </Button>
                       </Col>
                     </Form.Group>
@@ -266,3 +274,5 @@ export class ContactInfoForm extends React.Component<Props, State> {
     );
   }
 }
+
+export default withTranslation()(ContactInfoForm);

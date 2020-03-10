@@ -1,0 +1,21 @@
+{
+  "ru": {
+    "translation": {
+      "page02": {
+        "title": "Отлично!",
+        "subTitle": "Последний вопрос:",
+        "questionText": "Хотите разместить на бейдже QR-код c вашим телефоном и адресом email?",
+        "btnForWhatCaption": "Зачем мне это?",
+        "radioYesCaption": "Да, хочу",
+        "radioNoCaption": "Нет, спасибо",
+        "inputPlaceholders": {
+          "phone": "Телефон",
+          "email": "Email"
+        },
+        "explainModal": {
+          "text": "Вы сможете мгновенно обмениваться контактными данными с посетителями и участниками выставки"
+        }
+      }
+    }
+  }
+}

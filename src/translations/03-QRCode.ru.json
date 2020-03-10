@@ -1,0 +1,20 @@
+{
+  "ru": {
+    "translation": {
+      "page03": {
+        "title": "Готово!",
+        "subTitle": "Сканируйте этот код на стойках автоматической печати бейджей",
+        "inputPlaceholders": {},
+        "repeatModal": {
+          "text": "Повторить ввод данных?",
+          "btnOkCaption": "Повторить"
+        },
+        "failure": {
+          "oops": "Ой!",
+          "somethingWrong": "Что-то пошло не так...",
+          "btnRetryCaption": "Повторить запрос"
+        }
+      }
+    }
+  }
+}

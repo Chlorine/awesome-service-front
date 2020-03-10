@@ -18,7 +18,7 @@ import { WSHelper } from '../server-ws';
 
 import './MainView.scss';
 import { CurrentBreakpoint } from './common';
-// import produce from 'immer';
+import { Utils } from '../utils';
 
 const mapStateToProps = (state: AppState) => {
   return {
@@ -40,6 +40,10 @@ declare type State = {
   language: 'ru' | 'en';
 };
 
+const flipLang = (lang: State['language']): State['language'] => {
+  return lang === 'en' ? 'ru' : 'en';
+};
+
 class MainView extends React.Component<Props, State> {
   wsHelper = new WSHelper();
 
@@ -49,6 +53,10 @@ class MainView extends React.Component<Props, State> {
   };
 
   componentDidMount() {
+    const { i18n } = this.props;
+
+    this.setState({ language: flipLang(flipLang(i18n.language as any)) });
+
     this.wsHelper.onConnStateChanged = connected => {
       this.setState({ wsConnected: connected });
 
@@ -109,11 +117,11 @@ class MainView extends React.Component<Props, State> {
     const { t } = this.props;
 
     return (
-      <footer className="tscontr-footer py-1 fixed-bottom">
+      <footer className="ts-nice-footer py-1 fixed-bottom">
         <Container fluid={true}>
           <div style={{ lineHeight: '110%' }}>
             <small>
-              &copy; {t('ticketSoft')} 2020{' '}
+              &copy; {t('common.ticketSoft')} 2020{' '}
               <a
                 href="http://www.soft.ru"
                 target="_blank"
@@ -130,17 +138,22 @@ class MainView extends React.Component<Props, State> {
 
   toggleLanguage = (ev: React.SyntheticEvent<HTMLButtonElement>) => {
     ev.preventDefault();
+    console.log(`toggleLanguage (curr: ${this.state.language})`);
 
+    this.setLanguage(flipLang(this.state.language));
+  };
+
+  private setLanguage(lang: State['language']) {
     const { i18n } = this.props;
-    const { language } = this.state;
-
-    const lang = language === 'ru' ? 'en' : 'ru';
 
     i18n
       .changeLanguage(lang)
-      .then(() => this.setState({ language: lang }))
+      .then(() => {
+        this.setState({ language: lang });
+        Utils.localStorageSet('language', lang);
+      })
       .catch(console.error);
-  };
+  }
 
   render() {
     const { language } = this.state;
@@ -176,7 +189,7 @@ class MainView extends React.Component<Props, State> {
 
                 <span className="d-md-inline">
                   {' '}
-                  {t('webAppTitle')}{' '}
+                  {t('common.pageTitle', 'Регистрялово')}{' '}
                   <span className="text-danger">
                     <CurrentBreakpoint invisible={true} />
                   </span>{' '}
@@ -191,7 +204,7 @@ class MainView extends React.Component<Props, State> {
                   onClick={this.toggleLanguage}
                 >
                   <span className="mr-1 text-uppercase">
-                    {language === 'en' ? 'RU' : 'EN'}
+                    {flipLang(language).toUpperCase()}
                   </span>
                   <span
                     className={classNames('flag-icon', {
@@ -205,7 +218,7 @@ class MainView extends React.Component<Props, State> {
           </Navbar>
         </header>
         {/* ---- */}
-        <main className="tscontr-main flex-fill">
+        <main className="ts-nice-main flex-fill">
           <Container fluid={true} className="mt-3 mb-3">
             {this.props.children}
           </Container>

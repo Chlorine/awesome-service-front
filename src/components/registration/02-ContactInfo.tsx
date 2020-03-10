@@ -7,8 +7,9 @@ import { connect } from 'react-redux';
 import { history } from '../../store';
 import { AppState } from '../../store/state';
 import { Actions as VisitorInfoActions } from '../../actions/visitor-info';
-import { ContactInfoForm } from './ContactInfoForm';
+import ContactInfoForm from './ContactInfoForm';
 import ContactInfoExplainModal from './ContactInfoExplainModal';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
 const mapStateToProps = (state: AppState) => {
   return {
@@ -24,7 +25,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 };
 
 declare type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+  ReturnType<typeof mapDispatchToProps> &
+  WithTranslation;
 
 declare type State = {
   explainModalVisible: boolean;
@@ -53,7 +55,7 @@ class Page02_ContactInfo extends React.Component<Props, State> {
 
   render() {
     const { explainModalVisible } = this.state;
-    const { visitorInfo } = this.props;
+    const { visitorInfo, t } = this.props;
     const { email, phone, wantsToShareContacts } = visitorInfo;
 
     return (
@@ -64,25 +66,21 @@ class Page02_ContactInfo extends React.Component<Props, State> {
         />
         <Row>
           <Col>
-            <h4>Отлично!</h4>
+            <h4>{t('page02.title')}</h4>
 
-            <p className="text-muted">Последний вопрос:</p>
+            <p className="text-muted">{t('page02.subTitle')}</p>
           </Col>
         </Row>
         <Row>
           <Col>
-            <p>
-              Хотите разместить на бейдже{' '}
-              <span className="text-nowrap">QR-код</span> с вашим телефоном и
-              адресом email?
-            </p>
+            <p>{t('page02.questionText')}</p>
 
             <p>
               <button
                 className="link-button link-like"
                 onClick={() => this.setState({ explainModalVisible: true })}
               >
-                Зачем мне это?
+                {t('page02.btnForWhatCaption')}
               </button>
             </p>
           </Col>
@@ -96,7 +94,7 @@ class Page02_ContactInfo extends React.Component<Props, State> {
                     <Form.Check
                       type="radio"
                       inline
-                      label="Нет, спасибо"
+                      label={t('page02.radioNoCaption')}
                       name="formRadioNO"
                       id="formRadioNO"
                       value="NO"
@@ -110,7 +108,7 @@ class Page02_ContactInfo extends React.Component<Props, State> {
                     <Form.Check
                       type="radio"
                       inline
-                      label="Да, хочу"
+                      label={t('page02.radioYesCaption')}
                       name="formRadioYES"
                       id="formRadioYES"
                       value="YES"
@@ -138,7 +136,7 @@ class Page02_ContactInfo extends React.Component<Props, State> {
           <Row className="pt-5">
             <Col>
               <Button variant="secondary" onClick={this.onBtnPrev}>
-                Назад
+                {t('common.buttons.back')}
               </Button>
               <Button
                 className="ml-2"
@@ -147,7 +145,7 @@ class Page02_ContactInfo extends React.Component<Props, State> {
                   this.props.visitorInfoActions.contactInfoSubmitted('', '')
                 }
               >
-                Продолжить
+                {t('common.buttons.continue')}
               </Button>
             </Col>
           </Row>
@@ -157,4 +155,6 @@ class Page02_ContactInfo extends React.Component<Props, State> {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Page02_ContactInfo);
+export default withTranslation()(
+  connect(mapStateToProps, mapDispatchToProps)(Page02_ContactInfo),
+);

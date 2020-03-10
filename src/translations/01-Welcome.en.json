@@ -1,0 +1,17 @@
+{
+  "en": {
+    "translation": {
+      "page01": {
+        "title": "Welcome!",
+        "subTitle": "Please fill in form for badge printing",
+        "inputPlaceholders": {
+          "firstName": "First name",
+          "middleName": "Middle name",
+          "lastName": "Surname",
+          "company": "Company name",
+          "position": "Position"
+        }
+      }
+    }
+  }
+}

@@ -16,6 +16,7 @@ import TS_LOGO from './../../images/ts_334.png';
 
 import serverApi from '../../server-api';
 import StartOverConfirmModal from './StartOverConfirmModal';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
 const mapStateToProps = (state: AppState) => {
   return {
@@ -31,7 +32,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 };
 
 declare type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+  ReturnType<typeof mapDispatchToProps> &
+  WithTranslation;
 
 declare type State = {
   isWorking: boolean;
@@ -67,7 +69,7 @@ class Page03_QRCode extends React.Component<Props, State> {
         email,
         phone,
         __delay: 100,
-        __genErr: false,
+        __genErr: !'Не удалось сделать хорошую мину при плохой игре',
       });
 
       console.log(`visitorId: ${visitorId}`);
@@ -102,10 +104,7 @@ class Page03_QRCode extends React.Component<Props, State> {
 
       console.log(vCardData);
 
-      // const simpleString = `${baseInfo.firstName};${baseInfo.middleName};${baseInfo.lastName};${baseInfo.companyName};${baseInfo.position};${phone};${email}`;
-
       this.setState({ qrCodeValue: vCardData });
-      // this.setState({ qrCodeValue: simpleString });
     } catch (err) {
       this.setState({ errorMsg: err.message });
     }
@@ -138,6 +137,8 @@ class Page03_QRCode extends React.Component<Props, State> {
       startOverModalVisible,
     } = this.state;
 
+    const { t } = this.props;
+
     return (
       <>
         <StartOverConfirmModal
@@ -148,7 +149,7 @@ class Page03_QRCode extends React.Component<Props, State> {
           <Row>
             <Col className="d-flex flex-column align-items-center">
               <Spinner animation="border" variant="secondary" />
-              <div className="mt-3"> Пожалуйста, подождите...</div>
+              <div className="mt-3">{t('common.messages.pleaseWait')}</div>
             </Col>
           </Row>
         )}
@@ -157,18 +158,19 @@ class Page03_QRCode extends React.Component<Props, State> {
             <Col className="d-flex flex-column align-items-center text-center">
               <div>
                 <h3>
-                  <i className="fa fa-bug text-danger" /> Ой!
+                  <i className="fa fa-frown-o text-danger" />{' '}
+                  {t('page03.failure.oops')}
                 </h3>
               </div>
               <div>
-                <p>Что-то пошло не так</p>
+                <p>{t('page03.failure.somethingWrong')}</p>
               </div>
               <div>
                 <small className="text-muted">{errorMsg}</small>
               </div>
               <div className="pt-5">
                 <Button variant="secondary" onClick={this.getQRCode}>
-                  Повторить запрос
+                  {t('page03.failure.btnRetryCaption')}
                 </Button>
               </div>
             </Col>
@@ -178,11 +180,9 @@ class Page03_QRCode extends React.Component<Props, State> {
           <>
             <Row>
               <Col>
-                <h4>Готово!</h4>
+                <h4>{t('page03.title')}</h4>
 
-                <p className="text-muted">
-                  Сканируйте этот код на стойках автоматической печати бейджей
-                </p>
+                <p className="text-muted">{t('page03.subTitle')}</p>
               </Col>
             </Row>
             <Row>
@@ -198,7 +198,7 @@ class Page03_QRCode extends React.Component<Props, State> {
                             bgColor={'#ffffff'}
                             fgColor={'#000000'}
                             includeMargin={true}
-                            level={'M'}
+                            level={'Q'}
                             renderAs={'svg'}
                             imageSettings={{
                               excavate: true,
@@ -220,7 +220,7 @@ class Page03_QRCode extends React.Component<Props, State> {
                   variant="secondary"
                   onClick={() => this.setState({ startOverModalVisible: true })}
                 >
-                  Начать сначала
+                  {t('common.buttons.startOver')}
                 </Button>
               </Col>
             </Row>
@@ -231,4 +231,6 @@ class Page03_QRCode extends React.Component<Props, State> {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Page03_QRCode);
+export default withTranslation()(
+  connect(mapStateToProps, mapDispatchToProps)(Page03_QRCode),
+);

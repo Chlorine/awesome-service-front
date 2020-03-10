@@ -67,14 +67,18 @@ export class ServerAPI {
 
   async execute<AT extends keyof ApiActions>(
     action: AT,
-    params: Params<AT> & { __delay?: number, __genErr?: boolean },
+    params: Params<AT> & { __delay?: number, __genErr?: boolean | string },
   ): Promise<Results<AT>> {
     if (params.__delay) {
       await Utils.delay(params.__delay);
     }
 
     if (params.__genErr) {
-      throw new Error(`Тестовая ошибка во время выполнения метода '${action}'`);
+      if (typeof params.__genErr === 'string') {
+        throw new Error(params.__genErr);
+      } else {
+        throw new Error(`Тестовая ошибка во время выполнения метода '${action}'`);
+      }
     }
 
     return this.executeRequest({ action, ...(params as any) }, '/execute', 'POST');

@@ -6,11 +6,12 @@ import { Utils } from '../../utils';
 
 // import THE_IMAGE from './../../images/kumamon.png';
 import THE_IMAGE from './../../images/iconfinder_qrcode_2893873.svg';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
 export type Props = {
   visible: boolean;
   handleClose: () => void;
-};
+} & WithTranslation;
 
 declare type State = {};
 
@@ -36,7 +37,7 @@ class ContactInfoExplainModal extends React.Component<Props, State> {
   }
 
   render() {
-    const { visible } = this.props;
+    const { visible, t } = this.props;
     // const { } = this.state;
 
     return (
@@ -56,10 +57,7 @@ class ContactInfoExplainModal extends React.Component<Props, State> {
             </Col>
           </Row>
           <Row className="pt-2">
-            <Col className="text-center">
-              Вы сможете мгновенно обмениваться контактными данными с
-              посетителями и участниками выставки
-            </Col>
+            <Col className="text-center">{t('page02.explainModal.text')}</Col>
           </Row>
         </Modal.Body>
         <Modal.Footer className="d-flex justify-content-center">
@@ -69,7 +67,7 @@ class ContactInfoExplainModal extends React.Component<Props, State> {
             onClick={this.onCancel}
             disabled={false}
           >
-            Понятно
+            {t('common.buttons.gotIt')}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -77,4 +75,4 @@ class ContactInfoExplainModal extends React.Component<Props, State> {
   }
 }
 
-export default ContactInfoExplainModal;
+export default withTranslation()(ContactInfoExplainModal);

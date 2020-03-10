@@ -11,7 +11,7 @@ $small-font-size:             90% !default;
 @import '~bootstrap/scss/bootstrap.scss';
 
 $roboto-condensed: "Roboto-Condensed", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-$tscontr-main-mt: 62px;
+$ts-nice-main-mt: 62px;
 
 html, body {
   // min-height: 100vh;
@@ -28,31 +28,31 @@ body {
   font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-.tscontr-navbar {
+.ts-nice-navbar {
   font-family: $roboto-condensed;
   padding-top: 0.5em;
   padding-bottom: 0.5em;
 }
 
-.tscontr-header {
+.ts-nice-header {
   font-family: $roboto-condensed;
 }
 
-.tscontr-main {
-  margin-top: $tscontr-main-mt;
+.ts-nice-main {
+  margin-top: $ts-nice-main-mt;
 }
 
-.tscontr-footer {
+.ts-nice-footer {
   background-color: #fafafa;
   border-top: 1px solid #e7e7e7;
 }
 
-.tscontr-form-label {
+.ts-nice-form-label {
   text-align: left !important;
 }
 
 @media (min-width: 576px) {
-  .tscontr-form-label {
+  .ts-nice-form-label {
     text-align: right !important;
   }
 }

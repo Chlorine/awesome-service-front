@@ -1,0 +1,21 @@
+{
+  "en": {
+    "translation": {
+      "page02": {
+        "title": "Great!",
+        "subTitle": "Last question:",
+        "questionText": "Would you like to place QR-code with your phone number and email on your badge?",
+        "btnForWhatCaption": "Why would I do that?",
+        "radioYesCaption": "Yes, please",
+        "radioNoCaption": "No, thanks",
+        "inputPlaceholders": {
+          "phone": "Phone",
+          "email": "Email"
+        },
+        "explainModal": {
+          "text": "You will be able to instantly exchange contacts with other visitors and exhibitors"
+        }
+      }
+    }
+  }
+}

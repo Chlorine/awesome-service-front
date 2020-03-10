@@ -1,0 +1,17 @@
+{
+  "ru": {
+    "translation": {
+      "page01": {
+        "title": "Добро пожаловать!",
+        "subTitle": "Введите данные для печати бейджа",
+        "inputPlaceholders": {
+          "firstName": "Имя",
+          "middleName": "Отчество",
+          "lastName": "Фамилия",
+          "company": "Компания",
+          "position": "Должность"
+        }
+      }
+    }
+  }
+}

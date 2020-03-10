@@ -6,7 +6,8 @@ import { connect } from 'react-redux';
 import { AppState } from '../../store/state';
 import { Actions as VisitorInfoActions } from '../../actions/visitor-info';
 
-import { VisitorRegForm } from './VisitorRegForm';
+import VisitorRegForm from './VisitorRegForm';
+
 import { MinimalVisitorInfo } from '../../common-interfaces/common-front';
 import { Col, Row } from 'react-bootstrap';
 
@@ -46,9 +47,9 @@ class Page01_Welcome extends React.Component<Props, State> {
       <>
         <Row>
           <Col>
-            <h4>{t('welcome.title')}</h4>
+            <h4>{t('page01.title')}</h4>
 
-            <p className="text-muted">{t('welcome.subTitle')}</p>
+            <p className="text-muted">{t('page01.subTitle')}</p>
           </Col>
         </Row>
         <Row>

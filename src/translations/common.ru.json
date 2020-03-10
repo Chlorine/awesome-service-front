@@ -1,0 +1,20 @@
+{
+  "ru": {
+    "translation": {
+      "common": {
+        "pageTitle": "Регистрация",
+        "ticketSoft": "Тикет Софт",
+        "buttons": {
+          "back": "Назад",
+          "continue": "Продолжить",
+          "gotIt": "Понятно",
+          "startOver": "Начать сначала",
+          "cancel": "Отмена"
+        },
+        "messages": {
+          "pleaseWait": "Пожалуйста, подождите..."
+        }
+      }
+    }
+  }
+}

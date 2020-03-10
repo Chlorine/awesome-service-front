@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import * as _ from 'lodash';
 
@@ -7,11 +7,16 @@ import { Formik, FormikActions, FormikProps } from 'formik';
 
 import { MinimalVisitorInfo } from '../../common-interfaces/common-front';
 import { YupSchemes } from '../../utils';
+import {
+  useTranslation,
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
 
 export type Props = {
   handleSubmit: (visitorInfo: MinimalVisitorInfo) => Promise<void>;
   initialValues: MinimalVisitorInfo;
-};
+} & WithTranslation;
 
 declare type State = {
   errorMsg: string;
@@ -41,13 +46,15 @@ const FormField: React.FC<{
     errors,
   } = formikProps;
 
+  const { t } = useTranslation();
+
   return (
     <Col>
       <InputGroup>
         <Form.Control
           type="text"
           name={fieldName}
-          placeholder={placeholder}
+          placeholder={t(placeholder)}
           onBlur={handleBlur}
           maxLength={64}
           onChange={handleChange}
@@ -87,7 +94,7 @@ const FormField: React.FC<{
 // const HUMAN_NAME_PART = /^([^\$%\^*\/\\\|\{}\<\>\[\]№!#,\'\"\+£=~@€¥₽÷×_&:;?\d]+)+$/;
 const HUMAN_NAME_PART = /^([a-zA-Zа-яёА-ЯЁ -])+$/u;
 
-export class VisitorRegForm extends React.Component<Props, State> {
+class VisitorRegForm extends React.Component<Props, State> {
   state: State = {
     errorMsg: '',
   };
@@ -102,27 +109,27 @@ export class VisitorRegForm extends React.Component<Props, State> {
 
   private inputFields: { [key in keyof FormValues]: InputField } = {
     firstName: {
-      placeholder: 'Имя',
+      placeholder: 'page01.inputPlaceholders.firstName',
       autoComplete: 'given-name',
       ref: React.createRef<HTMLInputElement>(),
     },
     middleName: {
-      placeholder: 'Отчество',
+      placeholder: 'page01.inputPlaceholders.middleName',
       autoComplete: 'additional-name',
       ref: React.createRef<HTMLInputElement>(),
     },
     lastName: {
-      placeholder: 'Фамилия',
+      placeholder: 'page01.inputPlaceholders.lastName',
       autoComplete: 'given-name',
       ref: React.createRef<HTMLInputElement>(),
     },
     companyName: {
-      placeholder: 'Компания',
+      placeholder: 'page01.inputPlaceholders.company',
       autoComplete: 'organization',
       ref: React.createRef<HTMLInputElement>(),
     },
     position: {
-      placeholder: 'Должность',
+      placeholder: 'page01.inputPlaceholders.position',
       autoComplete: 'organization-title',
       ref: React.createRef<HTMLInputElement>(),
     },
@@ -161,7 +168,7 @@ export class VisitorRegForm extends React.Component<Props, State> {
   };
 
   render() {
-    const { initialValues } = this.props;
+    const { initialValues, t, i18n } = this.props;
 
     return (
       <>
@@ -173,7 +180,27 @@ export class VisitorRegForm extends React.Component<Props, State> {
               onReset={this.onReset}
               initialValues={initialValues}
               render={(props: FormikProps<FormValues>) => {
-                const { handleSubmit, handleReset, isSubmitting } = props;
+                const {
+                  handleSubmit,
+                  handleReset,
+                  isSubmitting,
+                  errors,
+                  touched,
+                  setFieldTouched,
+                } = props;
+
+                // const onLangChanged = (lang: string): void => {
+                //   Object.keys(errors).forEach(fieldName => {
+                //     if (Object.keys(touched).includes(fieldName)) {
+                //       setFieldTouched(fieldName);
+                //     }
+                //   });
+                // };
+
+                // useEffect(() => {
+                //   i18n.on('languageChanged', onLangChanged);
+                //   return () => i18n.off('languageChanged', onLangChanged);
+                // });
 
                 return (
                   <Form
@@ -201,7 +228,7 @@ export class VisitorRegForm extends React.Component<Props, State> {
                           disabled={isSubmitting}
                           className=""
                         >
-                          Продолжить
+                          {t('common.buttons.continue')}
                         </Button>
                       </Col>
                     </Form.Group>
@@ -215,3 +242,5 @@ export class VisitorRegForm extends React.Component<Props, State> {
     );
   }
 }
+
+export default withTranslation()(VisitorRegForm);

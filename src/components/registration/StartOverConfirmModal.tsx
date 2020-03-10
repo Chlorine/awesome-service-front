@@ -2,11 +2,12 @@ import React from 'react';
 
 import { Button, Modal, Row, Col } from 'react-bootstrap';
 import { Utils } from '../../utils';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
 export type Props = {
   visible: boolean;
   handleClose: (confirmed: boolean) => void;
-};
+} & WithTranslation;
 
 declare type State = {};
 
@@ -36,7 +37,7 @@ class StartOverConfirmModal extends React.Component<Props, State> {
   }
 
   render() {
-    const { visible } = this.props;
+    const { visible, t } = this.props;
     // const { } = this.state;
 
     return (
@@ -49,17 +50,17 @@ class StartOverConfirmModal extends React.Component<Props, State> {
       >
         <Modal.Body className="pt-3 pb-3">
           <Row>
-            <Col>
-              <p>
-                <i className="fa fa-fw fa-question-circle text-info" />{' '}
-                Повторить ввод данных?
-              </p>
+            <Col className="text-center">
+              <h3>
+                <i className="fa fa-fw fa-question-circle text-info" />
+              </h3>
+              <p>{t('page03.repeatModal.text')}</p>
             </Col>
           </Row>
         </Modal.Body>
         <Modal.Footer className="d-flex justify-content-center">
           <Button variant="primary" onClick={this.onOk} disabled={false}>
-            Повторить
+            {t('page03.repeatModal.btnOkCaption')}
           </Button>
           <Button
             className="ml-2"
@@ -67,7 +68,7 @@ class StartOverConfirmModal extends React.Component<Props, State> {
             onClick={this.onCancel}
             disabled={false}
           >
-            Отмена
+            {t('common.buttons.cancel')}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -75,4 +76,4 @@ class StartOverConfirmModal extends React.Component<Props, State> {
   }
 }
 
-export default StartOverConfirmModal;
+export default withTranslation()(StartOverConfirmModal);

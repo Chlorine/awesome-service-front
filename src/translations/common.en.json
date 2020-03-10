@@ -1,0 +1,20 @@
+{
+  "en": {
+    "translation": {
+      "common": {
+        "pageTitle": "Registration",
+        "ticketSoft": "Ticket Soft",
+        "buttons": {
+          "back": "Back",
+          "continue": "Continue",
+          "gotIt": "Got it",
+          "startOver": "Start over",
+          "cancel": "Cancel"
+        },
+        "messages": {
+          "pleaseWait": "Please, wait..."
+        }
+      }
+    }
+  }
+}
