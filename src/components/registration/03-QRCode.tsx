@@ -17,6 +17,7 @@ import TS_LOGO from './../../images/ts_334.png';
 import serverApi from '../../server-api';
 import StartOverConfirmModal from './StartOverConfirmModal';
 import { WithTranslation, withTranslation } from 'react-i18next';
+import { PhoneCountries } from '../../common-interfaces/phone-numbers';
 
 const mapStateToProps = (state: AppState) => {
   return {
@@ -62,12 +63,18 @@ class Page03_QRCode extends React.Component<Props, State> {
     this.setState({ isWorking: true, errorMsg: '', qrCodeValue: '' });
 
     try {
-      const { baseInfo, phone, email } = visitorInfo;
+      const { baseInfo, phone, phoneCountry, email } = visitorInfo;
+
+      let visitorPhone = '';
+
+      if (phone) {
+        visitorPhone = `${PhoneCountries[phoneCountry].prefix}${phone}`;
+      }
 
       const { visitorId } = await serverApi.execute('registerVisitor', {
         visitor: baseInfo,
         email,
-        phone,
+        phone: visitorPhone,
         __delay: 100,
         __genErr: !'Не удалось сделать хорошую мину при плохой игре',
       });
@@ -89,7 +96,7 @@ class Page03_QRCode extends React.Component<Props, State> {
       vCard.title = baseInfo.position;
 
       if (phone) {
-        vCard.cellPhone = phone;
+        vCard.cellPhone = visitorPhone;
       }
 
       if (email) {

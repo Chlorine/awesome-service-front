@@ -1,8 +1,15 @@
-import { VisitorInfoState } from '../store/state';
+import { produce, Draft } from 'immer';
+
 import { ActionType } from '../actions/visitor-info';
 
-import { produce, Draft } from 'immer';
 import { MinimalVisitorInfo } from '../common-interfaces/common-front';
+
+import { DefaultPhoneCountry } from '../common-interfaces/phone-numbers';
+
+import {
+  loadVisitorInfoStateInto,
+  VisitorInfoState,
+} from '../store/visitor-info-state';
 
 export const emptyMinimalVisitorInfo: MinimalVisitorInfo = {
   firstName: '',
@@ -12,21 +19,23 @@ export const emptyMinimalVisitorInfo: MinimalVisitorInfo = {
   position: '',
 };
 
-const initialState: VisitorInfoState = {
+export const initialVisitorInfoState: VisitorInfoState = {
   baseInfo: emptyMinimalVisitorInfo,
   wantsToShareContacts: false,
-  email: '',
+  phoneCountry: DefaultPhoneCountry,
   phone: '',
+  email: '',
 };
 
 export const visitorInfoReducer = produce(
-  (draft: Draft<VisitorInfoState> = initialState, action: ActionType) => {
+  (draft: Draft<VisitorInfoState> = initialVisitorInfoState, action: ActionType) => {
     switch (action.type) {
       case '@visitorInfo/reset':
         draft.baseInfo = emptyMinimalVisitorInfo;
         draft.wantsToShareContacts = false;
-        draft.email = '';
+        draft.phoneCountry = DefaultPhoneCountry;
         draft.phone = '';
+        draft.email = '';
         break;
       case '@visitorInfo/baseInfoSubmitted':
         draft.baseInfo = action.visitor;
@@ -36,10 +45,15 @@ export const visitorInfoReducer = produce(
         break;
       case '@visitorInfo/contactInfoSubmitted':
         {
-          const { email, phone } = action.contactInfo;
+          const { email, phone, phoneCountry } = action.contactInfo;
+
           draft.email = email;
           draft.phone = phone;
+          draft.phoneCountry = phoneCountry;
         }
+        break;
+      case '@visitorInfo/loadFromLocalStorage':
+        loadVisitorInfoStateInto(draft);
         break;
     }
 

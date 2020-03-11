@@ -1,8 +1,10 @@
 {
   "en": {
     "translation": {
-      "forms": {
-        "required": "Field is required"
+      "formErrors": {
+        "required": "Field is required",
+        "email": "Invalid email",
+        "matches": "Field must match the pattern"
       }
     }
   }

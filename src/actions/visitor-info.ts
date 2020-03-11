@@ -5,6 +5,7 @@ import {
 } from 'connected-react-router';
 
 import { MinimalVisitorInfo } from '../common-interfaces/common-front';
+import { PhoneCountry } from '../common-interfaces/phone-numbers';
 
 export type BaseInfoSubmitted = {
   type: '@visitorInfo/baseInfoSubmitted';
@@ -12,15 +13,16 @@ export type BaseInfoSubmitted = {
 };
 
 export type ShareContactsRadioChanged = {
-  type: '@visitorInfo/shareContactsRadioChanged',
+  type: '@visitorInfo/shareContactsRadioChanged';
   wantsToShare: boolean;
-}
+};
 
 export type ContactInfoSubmitted = {
   type: '@visitorInfo/contactInfoSubmitted';
   contactInfo: {
     email: string;
     phone: string;
+    phoneCountry: PhoneCountry;
   };
 };
 
@@ -28,7 +30,16 @@ export type Reset = {
   type: '@visitorInfo/reset';
 };
 
-export type ActionType = BaseInfoSubmitted | ShareContactsRadioChanged | ContactInfoSubmitted | Reset;
+export type LoadFromLocalStorage = {
+  type: '@visitorInfo/loadFromLocalStorage';
+};
+
+export type ActionType =
+  | BaseInfoSubmitted
+  | ShareContactsRadioChanged
+  | ContactInfoSubmitted
+  | Reset
+  | LoadFromLocalStorage;
 
 export const Actions = {
   baseInfoSubmitted: (visitor: MinimalVisitorInfo) => {
@@ -41,6 +52,7 @@ export const Actions = {
       dispatch(routerPush('/contact-info'));
     };
   },
+
   shareContactsRadioChanged: (wantsToShare: boolean) => {
     return (dispatch: Dispatch<ActionType>) => {
       dispatch({
@@ -49,19 +61,26 @@ export const Actions = {
       });
     };
   },
-  contactInfoSubmitted: (email: string, phone: string) => {
+
+  contactInfoSubmitted: (
+    email: string,
+    phone: string,
+    phoneCountry: PhoneCountry,
+  ) => {
     return (dispatch: Dispatch<ActionType | CallHistoryMethodAction>) => {
       dispatch({
         type: '@visitorInfo/contactInfoSubmitted',
         contactInfo: {
           email,
           phone,
+          phoneCountry,
         },
       });
 
       dispatch(routerPush('/get-qr'));
     };
   },
+
   reset: () => {
     return (dispatch: Dispatch<ActionType | CallHistoryMethodAction>) => {
       dispatch({
@@ -69,6 +88,14 @@ export const Actions = {
       });
 
       dispatch(routerPush('/welcome'));
+    };
+  },
+
+  loadFromLocalStorage: () => {
+    return (dispatch: Dispatch<ActionType>) => {
+      dispatch({
+        type: '@visitorInfo/loadFromLocalStorage',
+      });
     };
   },
 };

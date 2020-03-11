@@ -1,22 +1,47 @@
 import React from 'react';
-import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
+import { StringSchema } from 'yup';
+
+import {
+  Button,
+  Col,
+  DropdownButton,
+  Form,
+  InputGroup,
+  Row,
+  Dropdown,
+} from 'react-bootstrap';
+
+import classNames from 'classnames';
+import NumberFormat from 'react-number-format';
 
 import * as yup from 'yup';
 import { Formik, FormikActions, FormikProps } from 'formik';
 
 import { YupSchemes } from '../../utils';
+
 import {
   useTranslation,
   WithTranslation,
   withTranslation,
 } from 'react-i18next';
 
+import {
+  PCUtils,
+  PhoneCountries,
+  PhoneCountry,
+} from '../../common-interfaces/phone-numbers';
+
 export type Props = {
-  handleSubmit: (email: string, phone: string) => Promise<void>;
+  handleSubmit: (
+    email: string,
+    phone: string,
+    phoneCountry: PhoneCountry,
+  ) => Promise<void>;
   handleGoBack: () => void;
   initialValues: {
     email: string;
     phone: string;
+    phoneCountry: PhoneCountry;
   };
 } & WithTranslation;
 
@@ -25,8 +50,9 @@ declare type State = {
 };
 
 declare type FormValues = {
-  email: string;
+  phoneCountry: PhoneCountry;
   phone: string;
+  email: string;
 };
 
 declare type InputField = {
@@ -96,23 +122,65 @@ const FormField: React.FC<{
   );
 };
 
-const REGEXP_PHONE = /^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/;
+// const PhoneInputField
+
+// const REGEXP_FORMATTED_PHONE = /^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/;
+const REGEXP_PHONE = /^\d{9,14}$/;
+
+// declare type Country
 
 class ContactInfoForm extends React.Component<Props, State> {
   state: State = {
     errorMsg: '',
   };
 
+  // https://codificator.ru/code/phone/
+  // https://codificator.ru/code/mobile/
+
   private scheme = yup.object().shape<FormValues>({
+    phoneCountry: YupSchemes.stringField(12) as StringSchema<PhoneCountry>,
+    phone: YupSchemes.stringField(64)
+      .matches(REGEXP_PHONE, 'formErrors.patternPhone')
+      .test({
+        name: 'is-valid-ru-operator-code',
+        message: 'formErrors.rusPhoneOperatorCode',
+        test: function(value: string) {
+          if (!value) {
+            return true;
+          }
+
+          if (this.parent.phoneCountry === 'ru') {
+            // Код города/оператора должен начинаться с цифры 3, 4, 5, 6, 8, 9
+            if (-1 === [3, 4, 5, 6, 8, 9].indexOf(value.charCodeAt(0) - 0x30)) {
+              return false;
+            }
+          }
+          return true;
+        },
+      })
+      .test({
+        name: 'is-valid-length',
+        message: 'formErrors.patternPhone',
+        test: function(value: string) {
+          if (!value) {
+            return true;
+          }
+
+          const fCountry =
+            PhoneCountries[this.parent.phoneCountry as PhoneCountry];
+
+          if (fCountry) {
+            if (value.length < (fCountry.minLength || 10)) {
+              return false;
+            }
+          }
+          return true;
+        },
+      }),
     email: YupSchemes.email(64),
-    // phone: YupSchemes.stringField(64).matches(
-    //   REGEXP_PHONE,
-    //   'Некорректный номер телефона', // TODO: yup localize
-    // ),
-    phone: YupSchemes.stringField(64).matches(REGEXP_PHONE),
   });
 
-  private inputFields: { [key in keyof FormValues]: InputField } = {
+  private inputFields: { [key in keyof FormValues]?: InputField } = {
     phone: {
       placeholder: 'page02.inputPlaceholders.phone',
       autoComplete: 'tel',
@@ -140,8 +208,14 @@ class ContactInfoForm extends React.Component<Props, State> {
       errorMsg: '',
     });
 
+    const { email, phone, phoneCountry } = values;
+
     this.props
-      .handleSubmit(values.email, values.phone)
+      .handleSubmit(
+        email,
+        PCUtils.phoneFromFormValue(phoneCountry, phone),
+        phoneCountry,
+      )
       .then(() => {
         // вжух!
       })
@@ -162,20 +236,28 @@ class ContactInfoForm extends React.Component<Props, State> {
               validationSchema={this.scheme}
               onSubmit={this.onSubmit}
               onReset={this.onReset}
-              initialValues={initialValues}
+              initialValues={{
+                ...initialValues,
+                phone: PCUtils.formValueFromPhone(
+                  initialValues.phoneCountry,
+                  initialValues.phone,
+                ),
+              }}
               render={(props: FormikProps<FormValues>) => {
                 const {
                   handleSubmit,
                   handleReset,
                   isSubmitting,
                   handleBlur,
-                  handleChange,
                   values,
                   errors,
                   touched,
                   setFieldValue,
                   setFieldTouched,
+                  setFieldError,
                 } = props;
+
+                const { phoneCountry: country } = values;
 
                 return (
                   <Form
@@ -186,16 +268,58 @@ class ContactInfoForm extends React.Component<Props, State> {
                     <Form.Group as={Row}>
                       <Col>
                         <InputGroup>
-                          <Form.Control
-                            type="text"
+                          <DropdownButton
+                            variant="secondary"
+                            as={InputGroup.Prepend}
+                            id={'input-group-dropdown-1'}
+                            title={
+                              <i
+                                className={classNames({
+                                  'flag-icon': country !== '*',
+                                  [`flag-icon-${country}`]: country !== '*',
+                                  'fa fa-fw fa-globe': country === '*',
+                                })}
+                              />
+                            }
+                          >
+                            {Object.keys(PhoneCountries)
+                              .filter(k => k !== '*')
+                              .map(code => {
+                                let country = code as PhoneCountry;
+                                return (
+                                  <Dropdown.Item
+                                    key={code}
+                                    href="#"
+                                    onClick={() =>
+                                      setFieldValue('phoneCountry', country)
+                                    }
+                                  >
+                                    {t(`country.${country}`)}
+                                  </Dropdown.Item>
+                                );
+                              })}
+                            <Dropdown.Divider />
+                            <Dropdown.Item
+                              href="#"
+                              onClick={() => setFieldValue('phoneCountry', '*')}
+                            >
+                              {t(`country.*`)}
+                            </Dropdown.Item>
+                          </DropdownButton>
+
+                          <NumberFormat
+                            getInputRef={this.inputFields.phone!.ref}
                             name="phone"
-                            placeholder={t('page02.inputPlaceholders.phone')}
+                            format={PhoneCountries[values.phoneCountry].mask}
+                            value={values.phone}
+                            mask="_"
+                            allowEmptyFormatting={true}
+                            type="text" // "tel"?
+                            onValueChange={values1 =>
+                              setFieldValue('phone', values1.value)
+                            }
+                            className="form-control"
                             onBlur={handleBlur}
-                            maxLength={64}
-                            onChange={handleChange}
-                            value={values['phone']}
-                            autoComplete="tel"
-                            ref={this.inputFields.phone.ref}
                           />
                           {values['phone'] && (
                             <InputGroup.Append>
@@ -207,10 +331,13 @@ class ContactInfoForm extends React.Component<Props, State> {
                                   ev: React.SyntheticEvent<HTMLButtonElement>,
                                 ) => {
                                   ev.preventDefault();
-                                  setFieldValue('phone', '');
+                                  setFieldValue('countryCode', '+7');
+
+                                  setFieldError('phone', '');
                                   setFieldTouched('phone', false);
-                                  this.inputFields.phone.ref &&
-                                    this.inputFields.phone.ref.current.focus();
+                                  setFieldValue('phone', '');
+                                  this.inputFields.phone!.ref &&
+                                    this.inputFields.phone!.ref.current.focus();
                                 }}
                               >
                                 <span className="text-muted">
@@ -225,7 +352,7 @@ class ContactInfoForm extends React.Component<Props, State> {
                             className="d-block"
                             type="invalid"
                           >
-                            {errors['phone']}
+                            {t(errors['phone'] || '')}
                           </Form.Control.Feedback>
                         )}
                       </Col>
@@ -248,7 +375,7 @@ class ContactInfoForm extends React.Component<Props, State> {
                     <Form.Group as={Row}>
                       <Col className="d-flex align-items-center justify-content-start mt-1">
                         <Button
-                          variant="secondary"
+                          variant="outline-secondary"
                           disabled={isSubmitting}
                           onClick={() => this.props.handleGoBack()}
                         >
@@ -260,7 +387,7 @@ class ContactInfoForm extends React.Component<Props, State> {
                           variant={'primary'}
                           disabled={isSubmitting}
                         >
-                          {t('common.buttons.continue')}
+                          {t('common.buttons.finish')}
                         </Button>
                       </Col>
                     </Form.Group>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import * as _ from 'lodash';
 
@@ -12,6 +12,7 @@ import {
   withTranslation,
   WithTranslation,
 } from 'react-i18next';
+
 import { WithTranslatedFormErrors } from '../common';
 
 export type Props = {
@@ -101,9 +102,18 @@ class VisitorRegForm extends React.Component<Props, State> {
   };
 
   private scheme = yup.object().shape<FormValues>({
-    firstName: YupSchemes.stringField(64).matches(HUMAN_NAME_PART),
-    middleName: YupSchemes.stringField(64, 'optional').matches(HUMAN_NAME_PART),
-    lastName: YupSchemes.stringField(64).matches(HUMAN_NAME_PART),
+    lastName: YupSchemes.stringField(64).matches(
+      HUMAN_NAME_PART,
+      'formErrors.patternHumanNamePart',
+    ),
+    firstName: YupSchemes.stringField(64).matches(
+      HUMAN_NAME_PART,
+      'formErrors.patternHumanNamePart',
+    ),
+    middleName: YupSchemes.stringField(64, 'optional').matches(
+      HUMAN_NAME_PART,
+      'formErrors.patternHumanNamePart',
+    ),
     companyName: YupSchemes.stringField(64),
     position: YupSchemes.stringField(64),
   });
@@ -144,9 +154,12 @@ class VisitorRegForm extends React.Component<Props, State> {
   onSubmit = (values: FormValues, actions: FormikActions<FormValues>) => {
     values = this.scheme.cast(values);
 
-    values.firstName = _.capitalize(values.firstName);
-    values.middleName = _.capitalize(values.middleName);
-    values.lastName = _.capitalize(values.lastName);
+    values.firstName = _.capitalize(values.firstName.replace(/\s\s+/g, ' '));
+    values.middleName = _.capitalize(values.middleName.replace(/\s\s+/g, ' '));
+    values.lastName = _.capitalize(values.lastName.replace(/\s\s+/g, ' '));
+
+    values.companyName = values.companyName.replace(/\s\s+/g, ' ');
+    values.position = values.position.replace(/\s\s+/g, ' ');
 
     // TODO: вырезать повторные пробелы например
 
@@ -170,7 +183,7 @@ class VisitorRegForm extends React.Component<Props, State> {
   };
 
   render() {
-    const { initialValues, t, i18n } = this.props;
+    const { initialValues, t } = this.props;
 
     return (
       <>
@@ -182,27 +195,7 @@ class VisitorRegForm extends React.Component<Props, State> {
               onReset={this.onReset}
               initialValues={initialValues}
               render={(props: FormikProps<FormValues>) => {
-                const {
-                  handleSubmit,
-                  handleReset,
-                  isSubmitting,
-                  errors,
-                  touched,
-                  setFieldTouched,
-                } = props;
-
-                // const onLangChanged = (lang: string): void => {
-                //   Object.keys(errors).forEach(fieldName => {
-                //     if (Object.keys(touched).includes(fieldName)) {
-                //       setFieldTouched(fieldName);
-                //     }
-                //   });
-                // };
-
-                // useEffect(() => {
-                //   i18n.on('languageChanged', onLangChanged);
-                //   return () => i18n.off('languageChanged', onLangChanged);
-                // });
+                const { handleSubmit, handleReset, isSubmitting } = props;
 
                 return (
                   <WithTranslatedFormErrors formikProps={props}>

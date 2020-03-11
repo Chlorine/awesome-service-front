@@ -12,6 +12,7 @@ import { MinimalVisitorInfo } from '../../common-interfaces/common-front';
 import { Col, Row } from 'react-bootstrap';
 
 import { WithTranslation, withTranslation } from 'react-i18next';
+import { Utils } from '../../utils';
 
 const mapStateToProps = (state: AppState) => {
   return {
@@ -36,7 +37,14 @@ declare type State = {};
 class Page01_Welcome extends React.Component<Props, State> {
   state: State = {};
 
+  componentDidMount(): void {
+    const { loadFromLocalStorage } = this.props.visitorInfoActions;
+
+    setTimeout(() => loadFromLocalStorage(), 200);
+  }
+
   onSubmitRegForm = async (visitor: MinimalVisitorInfo) => {
+    await Utils.delay(50);
     this.props.visitorInfoActions.baseInfoSubmitted(visitor);
   };
 
@@ -48,7 +56,6 @@ class Page01_Welcome extends React.Component<Props, State> {
         <Row>
           <Col>
             <h4>{t('page01.title')}</h4>
-
             <p className="text-muted">{t('page01.subTitle')}</p>
           </Col>
         </Row>

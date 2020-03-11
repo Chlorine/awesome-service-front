@@ -10,6 +10,10 @@ import { Actions as VisitorInfoActions } from '../../actions/visitor-info';
 import ContactInfoForm from './ContactInfoForm';
 import ContactInfoExplainModal from './ContactInfoExplainModal';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import {
+  DefaultPhoneCountry,
+  PhoneCountry,
+} from '../../common-interfaces/phone-numbers';
 
 const mapStateToProps = (state: AppState) => {
   return {
@@ -43,8 +47,17 @@ class Page02_ContactInfo extends React.Component<Props, State> {
 
   componentDidMount(): void {}
 
-  onBtnNext = async (email: string, phone: string): Promise<void> => {
-    this.props.visitorInfoActions.contactInfoSubmitted(email, phone);
+  onBtnNext = async (
+    email: string,
+    phone: string,
+    phoneCountry: PhoneCountry,
+  ): Promise<void> => {
+    console.log(phoneCountry);
+    this.props.visitorInfoActions.contactInfoSubmitted(
+      email,
+      phone,
+      phoneCountry,
+    );
   };
 
   handleRadioChange = (ev: React.SyntheticEvent<HTMLInputElement>) => {
@@ -56,7 +69,7 @@ class Page02_ContactInfo extends React.Component<Props, State> {
   render() {
     const { explainModalVisible } = this.state;
     const { visitorInfo, t } = this.props;
-    const { email, phone, wantsToShareContacts } = visitorInfo;
+    const { email, phone, phoneCountry, wantsToShareContacts } = visitorInfo;
 
     return (
       <>
@@ -127,7 +140,7 @@ class Page02_ContactInfo extends React.Component<Props, State> {
               <ContactInfoForm
                 handleSubmit={this.onBtnNext}
                 handleGoBack={this.onBtnPrev}
-                initialValues={{ email, phone }}
+                initialValues={{ email, phone, phoneCountry }}
               />
             </Col>
           </Row>
@@ -135,17 +148,21 @@ class Page02_ContactInfo extends React.Component<Props, State> {
         {!wantsToShareContacts && (
           <Row className="pt-5">
             <Col>
-              <Button variant="secondary" onClick={this.onBtnPrev}>
+              <Button variant="outline-secondary" onClick={this.onBtnPrev}>
                 {t('common.buttons.back')}
               </Button>
               <Button
                 className="ml-2"
                 variant="primary"
                 onClick={() =>
-                  this.props.visitorInfoActions.contactInfoSubmitted('', '')
+                  this.props.visitorInfoActions.contactInfoSubmitted(
+                    '',
+                    '',
+                    DefaultPhoneCountry,
+                  )
                 }
               >
-                {t('common.buttons.continue')}
+                {t('common.buttons.finish')}
               </Button>
             </Col>
           </Row>

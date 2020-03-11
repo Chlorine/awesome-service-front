@@ -1,8 +1,10 @@
 {
   "ru": {
     "translation": {
-      "forms": {
-        "required": "Обязательное поле"
+      "formErrors": {
+        "required": "Обязательное поле",
+        "email": "Некорректный email",
+        "matches": "Поле не соответствует шаблону"
       }
     }
   }

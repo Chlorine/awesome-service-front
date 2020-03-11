@@ -1,17 +1,19 @@
-import { LocaleObject, setLocale } from 'yup';
+import { setLocale } from 'yup';
 
 /* eslint-disable no-template-curly-in-string */
 
 setLocale({
   mixed: {
-    required: 'forms.required',
+    required: 'formErrors.required',
     notType: 'Значение должно иметь тип ${type}',
   },
   string: {
-    max: 'Макс. количество символов: ${max}',
-    min: 'Мин. количество символов: ${min}',
-    email: 'Укажите корректный email-адрес',
-    matches: 'Недопустимое значение',
+    // max: 'Макс. количество символов: ${max}',
+    max: 'formErrors.stringTooLong',
+    // min: 'Мин. количество символов: ${min}',
+    min: 'formErrors.stringTooShort', // TODO: допилить
+    email: 'formErrors.email',
+    matches: 'formErrors.matches',
   },
   number: {
     min: 'Значение должно быть больше или равно ${min}',

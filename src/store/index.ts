@@ -7,34 +7,19 @@ import thunk from 'redux-thunk';
 
 import { createRootReducer } from './reducers';
 import { AppState } from './state';
-import { MinimalVisitorInfo } from '../common-interfaces/common-front';
-import { LocalStorageHelper } from '../utils';
-import { emptyMinimalVisitorInfo } from '../reducers/visitor-info';
+import {loadVisitorInfoStateInto, saveThisVisitorInfoState} from "./visitor-info-state";
+import { initialVisitorInfoState } from "../reducers/visitor-info";
 
 export const history = createBrowserHistory();
 
-declare type LSParamName = keyof MinimalVisitorInfo | 'shareContacts' | 'email' | 'phone';
-const ls = new LocalStorageHelper<LSParamName>('tsVisitorReg');
-
 export const configureStore = () => {
-
   // немножко персистента
 
   const preloadedState: Partial<AppState> = {
-    visitorInfo: {
-      baseInfo: emptyMinimalVisitorInfo,
-      wantsToShareContacts: !!ls.get('shareContacts'),
-      email: ls.get('email') || '',
-      phone: ls.get('phone') || '',
-    },
+    visitorInfo: initialVisitorInfoState
   };
 
-  const { baseInfo } = preloadedState.visitorInfo!;
-
-  Object.keys(baseInfo).forEach(key => {
-    let fieldName = key as keyof MinimalVisitorInfo;
-    baseInfo![fieldName] = ls.get(fieldName) || '';
-  });
+  loadVisitorInfoStateInto(preloadedState.visitorInfo!);
 
   const store = createStore(
     createRootReducer(history),
@@ -47,16 +32,9 @@ export const configureStore = () => {
       'visitorInfo'
     ] as AppState['visitorInfo']; // бля // TODO: типизировать стейт нормально
 
-    const { baseInfo, wantsToShareContacts, email, phone } = visitorInfo;
-
-    ls.set('firstName', baseInfo.firstName)
-      .set('middleName', baseInfo.middleName)
-      .set('lastName', baseInfo.lastName)
-      .set('companyName', baseInfo.companyName)
-      .set('position', baseInfo.position)
-      .set('shareContacts', wantsToShareContacts)
-      .set('email', email)
-      .set('phone', phone);
+    if (visitorInfo.baseInfo.firstName) {
+      saveThisVisitorInfoState(visitorInfo);
+    }
   });
 
   // Hot reloading
