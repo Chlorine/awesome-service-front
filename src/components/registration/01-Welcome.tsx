@@ -13,6 +13,7 @@ import { Col, Row } from 'react-bootstrap';
 
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Utils } from '../../utils';
+import { isVisitorInfoStateNotEmpty } from '../../store/visitor-info-state';
 
 const mapStateToProps = (state: AppState) => {
   return {
@@ -38,9 +39,13 @@ class Page01_Welcome extends React.Component<Props, State> {
   state: State = {};
 
   componentDidMount(): void {
-    const { loadFromLocalStorage } = this.props.visitorInfoActions;
+    const { visitorInfo, visitorInfoActions } = this.props;
 
-    setTimeout(() => loadFromLocalStorage(), 200);
+    if (!isVisitorInfoStateNotEmpty(visitorInfo)) {
+      // у нас пустой (чистый) visitor
+
+      setTimeout(() => visitorInfoActions.loadFromLocalStorage(), 333);
+    }
   }
 
   onSubmitRegForm = async (visitor: MinimalVisitorInfo) => {

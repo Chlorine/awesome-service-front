@@ -314,12 +314,17 @@ class ContactInfoForm extends React.Component<Props, State> {
                             value={values.phone}
                             mask="_"
                             allowEmptyFormatting={true}
-                            type="text" // "tel"?
+                            type="tel" // "tel"?
                             onValueChange={values1 =>
                               setFieldValue('phone', values1.value)
                             }
                             className="form-control"
                             onBlur={handleBlur}
+                            // autoComplete="tel" // <-- фигня с автозаполнением на мобилке, если маска :(
+                            removeFormatting={formattedValue => {
+                              console.log('removeFormatting', formattedValue);
+                              return formattedValue;
+                            }}
                           />
                           {values['phone'] && (
                             <InputGroup.Append>

@@ -10,10 +10,16 @@
           "finish": "Submit",
           "gotIt": "Got it",
           "startOver": "Start over",
-          "cancel": "Cancel"
+          "cancel": "Cancel",
+          "close": "Close"
         },
         "messages": {
           "pleaseWait": "Please, wait..."
+        },
+        "suggestionNote": "Select an option or continue typing",
+        "shareLinkModal": {
+          "title": "Link to this site",
+          "subTitle": "Scan QR code to open the link"
         }
       },
       "formErrors": {

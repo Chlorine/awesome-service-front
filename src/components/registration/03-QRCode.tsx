@@ -3,6 +3,7 @@ import { Button, Col, Row, Spinner, Card } from 'react-bootstrap';
 import QRCode from 'qrcode.react';
 import vCardFactory from 'vcards-js';
 import Measure, { ContentRect } from 'react-measure';
+import { Redirect } from 'react-router';
 
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -18,6 +19,7 @@ import serverApi from '../../server-api';
 import StartOverConfirmModal from './StartOverConfirmModal';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { PhoneCountries } from '../../common-interfaces/phone-numbers';
+import { isVisitorInfoStateNotEmpty } from '../../store/visitor-info-state';
 
 const mapStateToProps = (state: AppState) => {
   return {
@@ -54,7 +56,11 @@ class Page03_QRCode extends React.Component<Props, State> {
   };
 
   componentDidMount(): void {
-    this.getQRCode().catch(err => console.error);
+    const { visitorInfo } = this.props;
+
+    if (isVisitorInfoStateNotEmpty(visitorInfo)) {
+      this.getQRCode().catch(err => console.error);
+    }
   }
 
   getQRCode = async () => {
@@ -83,11 +89,6 @@ class Page03_QRCode extends React.Component<Props, State> {
 
       const vCard = vCardFactory();
 
-      // vCard.version = '3';
-
-      // console.log(vCard.getMajorVersion());
-      // console.log(JSON.stringify(vCard, null, 2));
-
       vCard.firstName = baseInfo.firstName;
       vCard.middleName = baseInfo.middleName;
       vCard.lastName = baseInfo.lastName;
@@ -105,9 +106,9 @@ class Page03_QRCode extends React.Component<Props, State> {
 
       vCard.version = '3.0';
 
-      // let vCardData = vCard.getFormattedString();
+      let vCardData = vCard.getFormattedString();
 
-      let vCardData = vCard.getFormattedString().replace(/;CHARSET=UTF-8/g, '');
+      // let vCardData = vCard.getFormattedString().replace(/;CHARSET=UTF-8/g, '');
 
       console.log(vCardData);
 
@@ -144,7 +145,11 @@ class Page03_QRCode extends React.Component<Props, State> {
       startOverModalVisible,
     } = this.state;
 
-    const { t } = this.props;
+    const { t, visitorInfo } = this.props;
+
+    if (!isVisitorInfoStateNotEmpty(visitorInfo)) {
+      return <Redirect to={'/welcome'} />;
+    }
 
     return (
       <>
@@ -197,7 +202,11 @@ class Page03_QRCode extends React.Component<Props, State> {
                 <Card>
                   <Measure bounds={true} onResize={this.onQRPlaceholderResize}>
                     {({ measureRef }) => (
-                      <div ref={measureRef} style={{ padding: 2 }}>
+                      <div
+                        ref={measureRef}
+                        style={{ padding: 2 }}
+                        className="shadow"
+                      >
                         {qrPlaceholderWidth > 4 && (
                           <QRCode
                             value={qrCodeValue}

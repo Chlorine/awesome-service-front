@@ -28,9 +28,9 @@ export const PhoneCountries: {
   },
   by: {
     name: 'Беларусь',
-    prefix: '+37',
-    mask: '+37 (5##) ###-##-##',
-    valuePrefix: '5',
+    prefix: '+375',
+    mask: '+375 (##) ###-##-##',
+    valuePrefix: '',
     minLength: 9,
   },
   kz: {
@@ -40,9 +40,9 @@ export const PhoneCountries: {
   },
   ua: {
     name: 'Україна',
-    prefix: '+38',
-    mask: '+38 (0##) ###-##-##',
-    valuePrefix: '0',
+    prefix: '+380',
+    mask: '+380 (##) ###-##-##',
+    valuePrefix: '',
     minLength: 9,
   },
   '*': {

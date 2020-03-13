@@ -13,11 +13,12 @@ export class ServerAPI {
   private readonly apiUrl: string;
 
   constructor() {
-    this.apiUrl =
-      process.env.NODE_ENV === 'production'
-        ? `https://api.${window.location.hostname}/api`
-        : `http://${DEV_API_HOSTNAME}:${DEV_API_PORT}/api`;
+    this.apiUrl = ServerAPI.URL;
   }
+
+  static URL = process.env.NODE_ENV === 'production'
+    ? `https://api.${window.location.hostname}/api`
+    : `http://${DEV_API_HOSTNAME}:${DEV_API_PORT}/api`;
 
   async executeRequest(
     body: string | GenericObject,

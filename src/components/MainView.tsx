@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 // eslint-disable-next-line
 import { Dispatch, bindActionCreators } from 'redux';
 import { Redirect } from 'react-router';
-import { Button, Container, Nav, Navbar } from 'react-bootstrap';
+import { Button, Container, Nav, Navbar, Row, Col } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import classNames from 'classnames';
 import { WithTranslation, withTranslation } from 'react-i18next';
@@ -19,6 +19,7 @@ import { WSHelper } from '../server-ws';
 import './MainView.scss';
 import { CurrentBreakpoint } from './common';
 import { Utils } from '../utils';
+import ShareLinkModal from './common/ShareLinkModal';
 
 const mapStateToProps = (state: AppState) => {
   return {
@@ -38,6 +39,7 @@ declare type Props = ReturnType<typeof mapStateToProps> &
 declare type State = {
   wsConnected: boolean;
   language: 'ru' | 'en';
+  shareLinkModalVisible: boolean;
 };
 
 const flipLang = (lang: State['language']): State['language'] => {
@@ -50,6 +52,7 @@ class MainView extends React.Component<Props, State> {
   state: State = {
     wsConnected: false,
     language: 'ru',
+    shareLinkModalVisible: false,
   };
 
   componentDidMount() {
@@ -119,18 +122,38 @@ class MainView extends React.Component<Props, State> {
     return (
       <footer className="ts-nice-footer py-1 fixed-bottom">
         <Container fluid={true}>
-          <div style={{ lineHeight: '110%' }}>
-            <small>
-              &copy; {t('common.ticketSoft')} 2020{' '}
-              <a
-                href="http://www.soft.ru"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                www.soft.ru
-              </a>
-            </small>
-          </div>
+          <Row>
+            <Col className="d-flex flex-row align-content-center justify-content-between">
+              <div style={{ lineHeight: '110%' }}>
+                <small>
+                  &copy; {t('common.ticketSoft')} 2020{' '}
+                  <a
+                    href="http://www.soft.ru"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    www.soft.ru
+                  </a>
+                </small>
+              </div>
+              <div style={{ lineHeight: '110%' }}>
+                <small>
+                  <button
+                    className="link-button link-like"
+                    onClick={() =>
+                      this.setState({ shareLinkModalVisible: true })
+                    }
+                  >
+                    <i className="fa fa-share" />
+                  </button>
+                </small>
+              </div>
+            </Col>
+          </Row>
+
+          {/*<div style={{ lineHeight: '110%' }} className="float-right">*/}
+          {/*  Пыщь поделиццо*/}
+          {/*</div>*/}
         </Container>
       </footer>
     );
@@ -156,7 +179,7 @@ class MainView extends React.Component<Props, State> {
   }
 
   render() {
-    const { language } = this.state;
+    const { language, shareLinkModalVisible } = this.state;
     const { t } = this.props;
 
     const searchPrefix = '?redirectTo=';
@@ -219,6 +242,10 @@ class MainView extends React.Component<Props, State> {
         </header>
         {/* ---- */}
         <main className="ts-nice-main flex-fill">
+          <ShareLinkModal
+            visible={shareLinkModalVisible}
+            handleClose={() => this.setState({ shareLinkModalVisible: false })}
+          />
           <Container fluid={true} className="mt-3 mb-3">
             {this.props.children}
           </Container>

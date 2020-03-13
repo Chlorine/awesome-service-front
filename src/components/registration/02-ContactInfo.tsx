@@ -4,6 +4,8 @@ import { Button, Col, Row, Form } from 'react-bootstrap';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import { Redirect } from 'react-router';
+
 import { history } from '../../store';
 import { AppState } from '../../store/state';
 import { Actions as VisitorInfoActions } from '../../actions/visitor-info';
@@ -14,6 +16,7 @@ import {
   DefaultPhoneCountry,
   PhoneCountry,
 } from '../../common-interfaces/phone-numbers';
+import { isVisitorInfoStateNotEmpty } from '../../store/visitor-info-state';
 
 const mapStateToProps = (state: AppState) => {
   return {
@@ -70,6 +73,10 @@ class Page02_ContactInfo extends React.Component<Props, State> {
     const { explainModalVisible } = this.state;
     const { visitorInfo, t } = this.props;
     const { email, phone, phoneCountry, wantsToShareContacts } = visitorInfo;
+
+    if (!isVisitorInfoStateNotEmpty(visitorInfo)) {
+      return <Redirect to={'/welcome'} />;
+    }
 
     return (
       <>

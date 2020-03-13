@@ -7,8 +7,13 @@ import thunk from 'redux-thunk';
 
 import { createRootReducer } from './reducers';
 import { AppState } from './state';
-import {loadVisitorInfoStateInto, saveThisVisitorInfoState} from "./visitor-info-state";
-import { initialVisitorInfoState } from "../reducers/visitor-info";
+
+import {
+  saveThisVisitorInfoState,
+  isVisitorInfoStateNotEmpty,
+} from './visitor-info-state';
+
+import { initialVisitorInfoState } from '../reducers/visitor-info';
 
 export const history = createBrowserHistory();
 
@@ -16,10 +21,10 @@ export const configureStore = () => {
   // немножко персистента
 
   const preloadedState: Partial<AppState> = {
-    visitorInfo: initialVisitorInfoState
+    visitorInfo: initialVisitorInfoState,
   };
 
-  loadVisitorInfoStateInto(preloadedState.visitorInfo!);
+  // loadVisitorInfoStateInto(preloadedState.visitorInfo!);
 
   const store = createStore(
     createRootReducer(history),
@@ -32,7 +37,7 @@ export const configureStore = () => {
       'visitorInfo'
     ] as AppState['visitorInfo']; // бля // TODO: типизировать стейт нормально
 
-    if (visitorInfo.baseInfo.firstName) {
+    if (isVisitorInfoStateNotEmpty(visitorInfo)) {
       saveThisVisitorInfoState(visitorInfo);
     }
   });

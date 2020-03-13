@@ -63,3 +63,9 @@ export const loadVisitorInfoStateInto = (vi: VisitorInfoState): void => {
     ls.get('phoneCountry') || DefaultPhoneCountry,
   );
 };
+
+export const isVisitorInfoStateNotEmpty = (
+  vi: VisitorInfoState,
+): boolean => {
+  return !!vi.baseInfo.firstName;
+};

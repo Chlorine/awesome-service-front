@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
-import * as _ from 'lodash';
+// import * as _ from 'lodash';
 
 import * as yup from 'yup';
 import { Formik, FormikActions, FormikProps } from 'formik';
@@ -14,6 +14,9 @@ import {
 } from 'react-i18next';
 
 import { WithTranslatedFormErrors } from '../common';
+import DaDataInput from '../DaData/DaDataInput';
+import { DaDataFioSuggestion } from '../DaData/dadata';
+import { DaDataGender, DaDataNamePart } from '../DaData/dadata-fio';
 
 export type Props = {
   handleSubmit: (visitorInfo: MinimalVisitorInfo) => Promise<void>;
@@ -22,14 +25,24 @@ export type Props = {
 
 declare type State = {
   errorMsg: string;
+  gender: DaDataGender;
 };
 
 declare type FormValues = MinimalVisitorInfo;
+
+declare type FieldName = keyof FormValues;
+declare type FioFieldName = Exclude<FieldName, 'companyName' | 'position'>;
 
 declare type InputField = {
   placeholder: string;
   autoComplete: string;
   ref?: React.RefObject<any>;
+};
+
+declare type FioInputField = {
+  placeholder: string;
+  namePart: DaDataNamePart;
+  autoComplete: string;
 };
 
 const FormField: React.FC<{
@@ -94,11 +107,24 @@ const FormField: React.FC<{
 };
 
 // const HUMAN_NAME_PART = /^([^\$%\^*\/\\\|\{}\<\>\[\]№!#,\'\"\+£=~@€¥₽÷×_&:;?\d]+)+$/;
-const HUMAN_NAME_PART = /^([a-zA-Zа-яёА-ЯЁ -])+$/u;
+
+// const HUMAN_NAME_PART = /^([a-zA-Zа-яёА-ЯЁ -])+$/u;
+
+// со всей кириллицей (ну и a-zA-Z). todo: а немцы?
+/*
+РусскийЫыЁёЭэЪъ
+УкраїнськаІіЇїЄє'
+БеларускаяЎў
+СрпскиЂђЉљЊњЋћЏџ
+СлавянскиеБуквыѰѱѬѭѨѩ
+
+* */
+const HUMAN_NAME_PART = /^[\u0400-\u052F\u2DE0-\u2DFF\uA640-\uA69F \-a-zA-Z]+$/;
 
 class VisitorRegForm extends React.Component<Props, State> {
   state: State = {
     errorMsg: '',
+    gender: 'UNKNOWN',
   };
 
   private scheme = yup.object().shape<FormValues>({
@@ -118,23 +144,25 @@ class VisitorRegForm extends React.Component<Props, State> {
     position: YupSchemes.stringField(64),
   });
 
-  private inputFields: { [key in keyof FormValues]: InputField } = {
+  private fioInputFields: { [key in FioFieldName]: FioInputField } = {
     lastName: {
       placeholder: 'page01.inputPlaceholders.lastName',
-      autoComplete: 'given-name',
-      ref: React.createRef<HTMLInputElement>(),
+      namePart: 'SURNAME',
+      autoComplete: 'family-name',
     },
     firstName: {
       placeholder: 'page01.inputPlaceholders.firstName',
+      namePart: 'NAME',
       autoComplete: 'given-name',
-      ref: React.createRef<HTMLInputElement>(),
     },
     middleName: {
       placeholder: 'page01.inputPlaceholders.middleName',
+      namePart: 'PATRONYMIC',
       autoComplete: 'additional-name',
-      ref: React.createRef<HTMLInputElement>(),
     },
+  };
 
+  private inputFields: { [key in keyof FormValues]?: InputField } = {
     companyName: {
       placeholder: 'page01.inputPlaceholders.company',
       autoComplete: 'organization',
@@ -154,25 +182,49 @@ class VisitorRegForm extends React.Component<Props, State> {
   onSubmit = (values: FormValues, actions: FormikActions<FormValues>) => {
     values = this.scheme.cast(values);
 
-    values.firstName = _.capitalize(values.firstName.replace(/\s\s+/g, ' '));
-    values.middleName = _.capitalize(values.middleName.replace(/\s\s+/g, ' '));
-    values.lastName = _.capitalize(values.lastName.replace(/\s\s+/g, ' '));
+    // 1) надо немножко попердолить данные формы
+    // 2) на копии, а то после enableReinitialize филды у values стали readonly (todo: кстати почему?)
 
-    values.companyName = values.companyName.replace(/\s\s+/g, ' ');
-    values.position = values.position.replace(/\s\s+/g, ' ');
+    const formValues = { ...values };
 
-    // TODO: вырезать повторные пробелы например
+    Object.keys(formValues).forEach(key => {
+      let fieldName = key as keyof FormValues;
 
-    actions.setValues(values);
+      // а) вырезать множественные пробелы
 
-    console.log('onSubmitRegForm', JSON.stringify(values, null, 2));
+      formValues[fieldName] = formValues[fieldName].replace(/\s\s+/g, ' ');
+
+      // дополнительно для ФИО:
+
+      if (['firstName', 'middleName', 'lastName'].includes(fieldName)) {
+        let namePart = formValues[fieldName];
+
+        // неясно, делать ли auto-capitalize
+        // на мобилке оно само в начале ввода станет с заглавной буквы
+        // на компе... то такое. А если пришел барон фон Эрлих? "фон" не надо с большой...
+
+        // temp decision: в жопу немцев
+
+        // _.capitalize попортит "Анна-Мария"
+
+        if (namePart.length > 0) {
+          namePart = `${namePart.charAt(0).toUpperCase()}${namePart.substr(1)}`;
+        }
+
+        formValues[fieldName] = namePart;
+      }
+    });
+
+    actions.setValues(formValues);
+
+    console.log('onSubmitRegForm', JSON.stringify(formValues, null, 2));
 
     this.setState({
       errorMsg: '',
     });
 
     this.props
-      .handleSubmit(values)
+      .handleSubmit(formValues)
       .then(() => {
         // вжух!
       })
@@ -182,8 +234,37 @@ class VisitorRegForm extends React.Component<Props, State> {
       });
   };
 
+  onSelectSuggestion(
+    fieldName: keyof FormValues,
+    suggestion: DaDataFioSuggestion,
+  ) {
+    if (fieldName === 'lastName') {
+      this.setState({ gender: suggestion.data.gender });
+    } else if (fieldName === 'firstName') {
+      if (
+        suggestion.data.gender !== 'UNKNOWN' &&
+        this.state.gender === 'UNKNOWN'
+      ) {
+        this.setState({ gender: suggestion.data.gender });
+      }
+    }
+  }
+
+  onFioFieldClear(fieldName: FioFieldName) {
+    if (fieldName === 'lastName') {
+      this.setState({ gender: 'UNKNOWN' });
+    }
+  }
+
+  onFioFieldInputChanged(fieldName: FioFieldName) {
+    if (fieldName === 'lastName') {
+      this.setState({ gender: 'UNKNOWN' });
+    }
+  }
+
   render() {
     const { initialValues, t } = this.props;
+    const { gender } = this.state;
 
     return (
       <>
@@ -193,9 +274,19 @@ class VisitorRegForm extends React.Component<Props, State> {
               validationSchema={this.scheme}
               onSubmit={this.onSubmit}
               onReset={this.onReset}
+              enableReinitialize={true}
               initialValues={initialValues}
               render={(props: FormikProps<FormValues>) => {
-                const { handleSubmit, handleReset, isSubmitting } = props;
+                const {
+                  handleSubmit,
+                  handleReset,
+                  handleBlur,
+                  isSubmitting,
+                  setFieldValue,
+                  touched,
+                  errors,
+                  values,
+                } = props;
 
                 return (
                   <WithTranslatedFormErrors formikProps={props}>
@@ -204,13 +295,65 @@ class VisitorRegForm extends React.Component<Props, State> {
                       onSubmit={handleSubmit}
                       onReset={handleReset}
                     >
+                      {/*<Row>*/}
+                      {/*  <Col>*/}
+                      {/*    <small>*/}
+                      {/*      <pre>*/}
+                      {/*        {JSON.stringify({ ...values, gender }, null, 2)}*/}
+                      {/*      </pre>*/}
+                      {/*    </small>*/}
+                      {/*  </Col>*/}
+                      {/*</Row>*/}
+                      {Object.keys(this.fioInputFields).map((key, index) => {
+                        const fieldName = key as FioFieldName;
+                        const fioInputField = this.fioInputFields[fieldName];
+                        return (
+                          <Form.Group as={Row} key={index + 123}>
+                            <Col>
+                              <DaDataInput
+                                name={fieldName}
+                                placeholder={t(fioInputField.placeholder)}
+                                query={values[fieldName]}
+                                namePart={fioInputField.namePart}
+                                onBtnClear={() => {
+                                  setFieldValue(fieldName, '');
+                                  this.onFioFieldClear(fieldName);
+                                }}
+                                onInputChange={value => {
+                                  setFieldValue(fieldName, value);
+                                  this.onFioFieldInputChanged(fieldName);
+                                }}
+                                onChange={suggestion => {
+                                  setFieldValue(fieldName, suggestion.value);
+                                  this.onSelectSuggestion(
+                                    fieldName,
+                                    suggestion,
+                                  );
+                                }}
+                                onInputBlur={handleBlur}
+                                gender={gender}
+                                autocomplete={fioInputField.autoComplete}
+                                suggestionNote={t('common.suggestionNote')}
+                              />
+                              {touched[fieldName] && errors[fieldName] && (
+                                <Form.Control.Feedback
+                                  className="d-block"
+                                  type="invalid"
+                                >
+                                  {t(errors[fieldName] || '')}
+                                </Form.Control.Feedback>
+                              )}
+                            </Col>
+                          </Form.Group>
+                        );
+                      })}
                       {Object.keys(this.inputFields).map((key, index) => {
                         let fieldName = key as keyof FormValues;
                         return (
                           <Form.Group as={Row} key={index}>
                             <FormField
                               fieldName={fieldName}
-                              field={this.inputFields[fieldName]}
+                              field={this.inputFields[fieldName]!}
                               formikProps={props}
                             />
                           </Form.Group>
