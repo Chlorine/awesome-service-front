@@ -9,7 +9,7 @@ import {
   DaDataNamePart,
   isFioRequest,
 } from './dadata-fio';
-import {ServerAPI} from "../../server-api";
+import { ServerAPI } from '../../server-api';
 
 export type DaDataApiName = 'fio' | 'address';
 
@@ -25,7 +25,7 @@ export type SuggestionsListener = (
   suggestions: DaDataSuggestion<any>[],
 ) => void;
 
-const USE_OWN_BACKEND = false;
+const USE_OWN_BACKEND = true;
 
 export class DaDataApi {
   private token = '00c3ab4b56af68caa1ea96ef0f2f63fb6d1e0cb1';
@@ -75,11 +75,7 @@ export class DaDataApi {
     return true;
   }
 
-  beginFetchFio(
-    query: string,
-    namePart: DaDataNamePart,
-    gender: DaDataGender,
-  ) {
+  beginFetchFio(query: string, namePart: DaDataNamePart, gender: DaDataGender) {
     const q = query.toLowerCase().trim();
 
     if (!this.isValidQuery(q)) {
@@ -108,6 +104,7 @@ export class DaDataApi {
       this.xhr.abort();
     }
 
+    const timestamp = new Date().getTime();
     console.log(`DaDataApi._beginFetch "${api}"`, JSON.stringify(params));
 
     this.xhr = new XMLHttpRequest();
@@ -115,10 +112,7 @@ export class DaDataApi {
     let url = USE_OWN_BACKEND ? ServerAPI.URL : 'https://suggestions.dadata.ru';
     url += `/suggestions/api/4_1/rs/suggest/${api}`;
 
-    this.xhr.open(
-      'POST',
-      url,
-    );
+    this.xhr.open('POST', url);
 
     this.xhr.setRequestHeader('Accept', 'application/json');
     this.xhr.setRequestHeader('Authorization', `Token ${this.token}`);
@@ -135,11 +129,18 @@ export class DaDataApi {
         const json = JSON.parse(this.xhr.response);
         if (json && json.suggestions && Array.isArray(json.suggestions)) {
           console.log(
-            `DaDataApi: received ${json.suggestions.length} suggestion(s)`,
+            `DaDataApi: received ${
+              json.suggestions.length
+            } suggestion(s) in ${new Date().getTime() - timestamp} ms`,
           );
 
           if (isFioRequest(params)) {
-            this.fioCache.set(params.query, params.parts![0], json.suggestions, params.gender);
+            this.fioCache.set(
+              params.query,
+              params.parts![0],
+              json.suggestions,
+              params.gender,
+            );
           }
 
           if (this.subscription) {

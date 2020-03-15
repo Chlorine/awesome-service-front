@@ -2,16 +2,16 @@
     position: relative;
 }
 
-.react-dadata__input {
-    display: block;
-    box-sizing: border-box;
-    height: 38px;
-    border: 1px solid #ccc;
-    /*border-radius: 4px;*/
-    /*width: 100%;*/
-    font-size: 16px;
-    padding: 0 10px;
-}
+/*.react-dadata__input {*/
+/*    display: block;*/
+/*    box-sizing: border-box;*/
+/*    height: 38px;*/
+/*    border: 1px solid #ccc;*/
+/*    !*border-radius: 4px;*!*/
+/*    !*width: 100%;*!*/
+/*    font-size: 16px;*/
+/*    padding: 0 10px;*/
+/*}*/
 
 .react-dadata__input:focus {
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 0 3px rgba(255,154,0,0.1);
@@ -41,19 +41,21 @@
 }
 
 .react-dadata__suggestion--current {
-    background-color: #FFF5E7;
+    /*background-color: #FFF5E7;*/
+    background-color: #dee2e6;
 }
 
 .react-dadata__suggestion:hover {
-    background-color: #FFF9F0;
+    /*background-color: #FFF9F0;*/
+    background-color: #e9ecef;
 }
 
 .react-dadata mark {
     background: none;
 }
 
-.react-dadata--highlighted {
-    color: #E5841C;
-    padding-right: 0;
-    padding-left: 0;
-}
+/*.react-dadata--highlighted {*/
+/*    color: #E5841C;*/
+/*    padding-right: 0;*/
+/*    padding-left: 0;*/
+/*}*/

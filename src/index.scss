@@ -8,6 +8,8 @@ $modal-header-padding-x:            0.75rem !default;
 
 $small-font-size:             90% !default;
 
+$enable-responsive-font-sizes: true;
+
 @import '~bootstrap/scss/bootstrap.scss';
 
 $roboto-condensed: "Roboto-Condensed", "Helvetica Neue", Helvetica, Arial, sans-serif !important;

@@ -121,6 +121,9 @@ const FormField: React.FC<{
 * */
 const HUMAN_NAME_PART = /^[\u0400-\u052F\u2DE0-\u2DFF\uA640-\uA69F \-a-zA-Z]+$/;
 
+// по чему пробовать искать подсказки
+const DADATA_FIO_REGEX = /^([а-яёА-ЯЁ -])+$/u;
+
 class VisitorRegForm extends React.Component<Props, State> {
   state: State = {
     errorMsg: '',
@@ -294,6 +297,7 @@ class VisitorRegForm extends React.Component<Props, State> {
                       noValidate
                       onSubmit={handleSubmit}
                       onReset={handleReset}
+                      spellCheck={false}
                     >
                       {/*<Row>*/}
                       {/*  <Col>*/}
@@ -334,6 +338,8 @@ class VisitorRegForm extends React.Component<Props, State> {
                                 gender={gender}
                                 autocomplete={fioInputField.autoComplete}
                                 suggestionNote={t('common.suggestionNote')}
+                                minCharsToStart={2}
+                                namePartRegexp={DADATA_FIO_REGEX}
                               />
                               {touched[fieldName] && errors[fieldName] && (
                                 <Form.Control.Feedback

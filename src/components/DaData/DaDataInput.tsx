@@ -28,6 +28,7 @@ export type Props = {
   name?: string;
   gender?: DaDataGender;
   suggestionNote?: string;
+  namePartRegexp?: RegExp;
 };
 
 declare type State = {
@@ -47,17 +48,21 @@ class DaDataInput extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
+    const { query, namePartRegexp } = props;
+
     this.state = {
-      query: this.props.query ? this.props.query : '',
-      inputQuery: this.props.query ? this.props.query : '',
+      query: query || '',
+      inputQuery: query || '',
       inputFocused: false,
       suggestions: [],
       suggestionIndex: -1,
       suggestionsVisible: true,
     };
+
+    this.daDataApi.namePartRegexp = namePartRegexp;
   }
 
-  setSuggestions = (suggestions: DaDataSuggestion<any>[]) => {
+  setSuggestions = (suggestions: Array<DaDataSuggestion<any>>) => {
     this.setState({
       suggestions: this.state.query ? suggestions : [],
       suggestionIndex: -1,
@@ -227,30 +232,33 @@ class DaDataInput extends React.Component<Props, State> {
   };
 
   getHighlightWords = (): Array<string> => {
-    const wordsToPass = [
-      'г',
-      'респ',
-      'ул',
-      'р-н',
-      'село',
-      'деревня',
-      'поселок',
-      'пр-д',
-      'пл',
-      'к',
-      'кв',
-      'обл',
-      'д',
-    ];
-    let words = this.state.inputQuery.replace(',', '').split(' ');
-    words = words.filter(word => {
-      return wordsToPass.indexOf(word) < 0;
-    });
-    return words;
+    // const wordsToPass = [
+    //   'г',
+    //   'респ',
+    //   'ул',
+    //   'р-н',
+    //   'село',
+    //   'деревня',
+    //   'поселок',
+    //   'пр-д',
+    //   'пл',
+    //   'к',
+    //   'кв',
+    //   'обл',
+    //   'д',
+    // ];
+    // let words = this.state.inputQuery.replace(',', '').split(' ');
+    // words = words.filter(word => {
+    //   return wordsToPass.indexOf(word) < 0;
+    // });
+    // return words;
+
+    return this.state.inputQuery.replace(',', '').split(' ');
   };
 
   render() {
-    const classNames = ['react-dadata__input form-control'];
+    // const classNames = ['react-dadata__input form-control'];
+    const classNames = ['form-control'];
 
     const {
       query,
@@ -323,7 +331,7 @@ class DaDataInput extends React.Component<Props, State> {
                     className={suggestionClass}
                   >
                     <Highlighter
-                      highlightClassName="react-dadata--highlighted"
+                      highlightClassName="text-info pl-0 pr-0"
                       autoEscape={true}
                       searchWords={this.getHighlightWords()}
                       textToHighlight={suggestion.value}
