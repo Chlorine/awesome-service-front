@@ -1,16 +1,22 @@
 import * as React from 'react';
 import Highlighter from 'react-highlight-words';
 
-import { DaDataApi, DaDataSuggestion } from './dadata';
+import { DaDataApi, SuggestionsSource, Stats } from './dadata';
 import { BoundsType, DaDataAddress } from './dadata-addr';
-import { DaDataGender, DaDataNamePart } from './dadata-fio';
 
 import './DaDataInput.css';
+import { Badge } from 'react-bootstrap';
+import {
+  DaDataGender,
+  DaDataNamePart,
+  DaDataSuggestion,
+} from '../../common-interfaces/common-dadata';
 
 export type Props = {
   placeholder?: string;
   query: string;
   minCharsToStart?: number;
+  maxCharsToStop?: number;
   autoLoad?: boolean;
   count?: number;
   onChange?: (suggestion: DaDataSuggestion<any>) => void;
@@ -38,10 +44,16 @@ declare type State = {
   suggestions: Array<DaDataSuggestion<any>>;
   suggestionIndex: number;
   suggestionsVisible: boolean;
+  stats: {
+    loadingTime: number;
+    executionTime: number;
+    source: SuggestionsSource | null;
+  };
 };
 
 class DaDataInput extends React.Component<Props, State> {
   state: State;
+
   inputRef = React.createRef<HTMLInputElement>();
   daDataApi = new DaDataApi();
 
@@ -57,15 +69,28 @@ class DaDataInput extends React.Component<Props, State> {
       suggestions: [],
       suggestionIndex: -1,
       suggestionsVisible: true,
+      stats: {
+        loadingTime: 0,
+        executionTime: 0,
+        source: null,
+      },
     };
 
     this.daDataApi.namePartRegexp = namePartRegexp;
   }
 
-  setSuggestions = (suggestions: Array<DaDataSuggestion<any>>) => {
+  setSuggestions = (
+    suggestions: Array<DaDataSuggestion<any>>,
+    stats: Stats,
+  ) => {
     this.setState({
       suggestions: this.state.query ? suggestions : [],
       suggestionIndex: -1,
+      stats: {
+        loadingTime: stats.lt,
+        executionTime: stats.et,
+        source: stats.src,
+      },
     });
   };
 
@@ -91,7 +116,6 @@ class DaDataInput extends React.Component<Props, State> {
       this.setState({
         query,
         inputQuery: query,
-        // suggestionsVisible: false,
       });
     }
   }
@@ -115,11 +139,15 @@ class DaDataInput extends React.Component<Props, State> {
   };
 
   onBtnClear = () => {
-    this.setState({ query: '', inputQuery: '', suggestionsVisible: false });
-    this.inputRef.current && this.inputRef.current.focus();
-    if (this.props.onBtnClear) {
-      this.props.onBtnClear();
-    }
+    this.setState(
+      { query: '', inputQuery: '', suggestionsVisible: false },
+      () => {
+        this.inputRef.current && this.inputRef.current.focus();
+        if (this.props.onBtnClear) {
+          this.props.onBtnClear();
+        }
+      },
+    );
   };
 
   onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -178,16 +206,18 @@ class DaDataInput extends React.Component<Props, State> {
   fetchSuggestions = () => {
     const { query } = this.state;
 
-    const { minCharsToStart } = this.props;
+    const { minCharsToStart, maxCharsToStop } = this.props;
 
     if (query.length >= (minCharsToStart || 2)) {
-      this.daDataApi.beginFetchFio(
-        query,
-        this.props.namePart,
-        this.props.gender || 'UNKNOWN',
-      );
+      if (query.length <= (maxCharsToStop || 16)) {
+        this.daDataApi.beginFetchFio(
+          query,
+          this.props.namePart,
+          this.props.gender || 'UNKNOWN',
+        );
+      }
     } else {
-      this.setSuggestions([]);
+      this.setSuggestions([], { et: 0, lt: 0, src: null });
     }
   };
 
@@ -266,7 +296,9 @@ class DaDataInput extends React.Component<Props, State> {
       suggestionIndex,
       suggestionsVisible,
       suggestions,
+      stats,
     } = this.state;
+
     const { placeholder, disabled } = this.props;
 
     if (this.props.className) {
@@ -316,6 +348,14 @@ class DaDataInput extends React.Component<Props, State> {
           suggestions.length > 0 && (
             <div className="react-dadata__suggestions">
               <div className="react-dadata__suggestion-note">
+                <div>
+                  <small>
+                    <Badge variant="secondary" className="pt-1 pb-1 mb-1">
+                      {stats.loadingTime.toFixed(0)} ms |{' '}
+                      {stats.executionTime.toFixed(2)} ms | {stats.source}
+                    </Badge>
+                  </small>
+                </div>
                 {this.props.suggestionNote ||
                   'Выберите вариант или продолжите ввод'}
               </div>

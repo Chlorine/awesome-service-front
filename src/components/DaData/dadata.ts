@@ -2,39 +2,48 @@ import { EventEmitter, EventSubscription } from 'fbemitter';
 import * as _ from 'lodash';
 import { GenericObject } from '../../common-interfaces/common-front';
 import { DaDataFioCache } from './dadata-cache';
+import { isFioRequest } from './dadata-fio';
+import { ServerAPI } from '../../server-api';
+
 import {
   DaDataFio,
   DaDataFioRequest,
   DaDataGender,
   DaDataNamePart,
-  isFioRequest,
-} from './dadata-fio';
-import { ServerAPI } from '../../server-api';
+  DaDataSuggestion,
+  DaDataSuggestionsSource,
+} from '../../common-interfaces/common-dadata';
 
 export type DaDataApiName = 'fio' | 'address';
 
-export type DaDataSuggestion<T> = {
-  value: string;
-  unrestricted_value: string;
-  data: T;
+export type SuggestionsSource =
+  | DaDataSuggestionsSource
+  | 'local-cache'
+  | 'backend';
+
+export type Stats = {
+  et: number;
+  lt: number;
+  src: SuggestionsSource | null;
 };
 
-export type DaDataFioSuggestion = DaDataSuggestion<DaDataFio>;
-
 export type SuggestionsListener = (
-  suggestions: DaDataSuggestion<any>[],
+  suggestions: DaDataSuggestion<DaDataFio>[],
+  stats: Stats,
 ) => void;
 
 const USE_OWN_BACKEND = true;
 
 export class DaDataApi {
-  private token = '00c3ab4b56af68caa1ea96ef0f2f63fb6d1e0cb1';
+  private token = 'WRONG_TOKEN!';
 
   private ee = new EventEmitter();
   private xhr?: XMLHttpRequest;
   private subscription?: EventSubscription;
-  private debouncedBeginFetch = _.debounce(this._beginFetch.bind(this), 300, {
-    leading: true,
+
+  private throttledBeginFetch = _.throttle(this._beginFetch.bind(this), 300);
+  private debouncedBeginFetch = _.debounce(this._beginFetch.bind(this), 400, {
+    leading: false,
   });
 
   namePartRegexp?: RegExp;
@@ -59,9 +68,9 @@ export class DaDataApi {
     }
   }
 
-  private emitResults(suggestions: DaDataSuggestion<any>[]) {
+  private emitResults(suggestions: DaDataSuggestion<any>[], stats: Stats) {
     if (this.subscription) {
-      this.ee.emit('fetched', suggestions);
+      this.ee.emit('fetched', suggestions, stats);
     }
   }
 
@@ -80,18 +89,24 @@ export class DaDataApi {
 
     if (!this.isValidQuery(q)) {
       console.log(`DaDataApi.beginFetchFio: bad query, skipping fetch`);
-      this.emitResults([]);
+      this.emitResults([], { et: 0, lt: 0, src: null });
     } else {
       const suggestions = this.fioCache.get(q, namePart, gender);
       if (suggestions) {
-        this.emitResults(suggestions);
+        this.emitResults(suggestions, { et: 0, lt: 0, src: 'local-cache' });
       } else {
         const req: DaDataFioRequest = {
           query: q,
           parts: [namePart],
           gender,
+          count: undefined, // не отправляем; по умолч. 10
         };
-        this.debouncedBeginFetch('fio', req);
+
+        if(q.length < 5) {
+          this.throttledBeginFetch('fio', req);
+        } else {
+          this.debouncedBeginFetch('fio', req);
+        }
       }
     }
   }
@@ -115,8 +130,11 @@ export class DaDataApi {
     this.xhr.open('POST', url);
 
     this.xhr.setRequestHeader('Accept', 'application/json');
-    this.xhr.setRequestHeader('Authorization', `Token ${this.token}`);
     this.xhr.setRequestHeader('Content-Type', 'application/json');
+
+    if (!USE_OWN_BACKEND) {
+      this.xhr.setRequestHeader('Authorization', `Token ${this.token}`);
+    }
 
     this.xhr.onreadystatechange = () => {
       if (!this.xhr || this.xhr.readyState !== 4) {
@@ -126,12 +144,12 @@ export class DaDataApi {
       console.log(`DaDataApi.xhr.onreadystatechange ${this.xhr.status}`);
 
       if (this.xhr.status >= 200 && this.xhr.status <= 300) {
+        const loadingTime = new Date().getTime() - timestamp;
         const json = JSON.parse(this.xhr.response);
+
         if (json && json.suggestions && Array.isArray(json.suggestions)) {
           console.log(
-            `DaDataApi: received ${
-              json.suggestions.length
-            } suggestion(s) in ${new Date().getTime() - timestamp} ms`,
+            `DaDataApi: received ${json.suggestions.length} suggestion(s) in ${loadingTime} ms`,
           );
 
           if (isFioRequest(params)) {
@@ -144,7 +162,13 @@ export class DaDataApi {
           }
 
           if (this.subscription) {
-            this.ee.emit('fetched', json.suggestions);
+            const stats: Stats = {
+              et: _.get(json, 'stats.et') || 0,
+              lt: loadingTime,
+              src: _.get(json, 'stats.src') || 'backend',
+            };
+
+            this.emitResults(json.suggestions, stats);
           }
         }
       } else {

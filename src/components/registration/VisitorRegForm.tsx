@@ -15,8 +15,11 @@ import {
 
 import { WithTranslatedFormErrors } from '../common';
 import DaDataInput from '../DaData/DaDataInput';
-import { DaDataFioSuggestion } from '../DaData/dadata';
-import { DaDataGender, DaDataNamePart } from '../DaData/dadata-fio';
+import {
+  DaDataFioSuggestion,
+  DaDataGender,
+  DaDataNamePart,
+} from '../../common-interfaces/common-dadata';
 
 export type Props = {
   handleSubmit: (visitorInfo: MinimalVisitorInfo) => Promise<void>;
