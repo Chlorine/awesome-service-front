@@ -24,6 +24,7 @@ import {
 export type Props = {
   handleSubmit: (visitorInfo: MinimalVisitorInfo) => Promise<void>;
   initialValues: MinimalVisitorInfo;
+  debugMode?: boolean;
 } & WithTranslation;
 
 declare type State = {
@@ -269,7 +270,7 @@ class VisitorRegForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { initialValues, t } = this.props;
+    const { initialValues, t, debugMode } = this.props;
     const { gender } = this.state;
 
     return (
@@ -302,15 +303,17 @@ class VisitorRegForm extends React.Component<Props, State> {
                       onReset={handleReset}
                       spellCheck={false}
                     >
-                      {/*<Row>*/}
-                      {/*  <Col>*/}
-                      {/*    <small>*/}
-                      {/*      <pre>*/}
-                      {/*        {JSON.stringify({ ...values, gender }, null, 2)}*/}
-                      {/*      </pre>*/}
-                      {/*    </small>*/}
-                      {/*  </Col>*/}
-                      {/*</Row>*/}
+                      {debugMode && (
+                        <Row>
+                          <Col>
+                            <small style={{ fontSize: '12px' }}>
+                              <pre>
+                                {JSON.stringify({ ...values, gender }, null, 2)}
+                              </pre>
+                            </small>
+                          </Col>
+                        </Row>
+                      )}
                       {Object.keys(this.fioInputFields).map((key, index) => {
                         const fieldName = key as FioFieldName;
                         const fioInputField = this.fioInputFields[fieldName];
@@ -343,6 +346,8 @@ class VisitorRegForm extends React.Component<Props, State> {
                                 suggestionNote={t('common.suggestionNote')}
                                 minCharsToStart={2}
                                 namePartRegexp={DADATA_FIO_REGEX}
+                                debugMode={debugMode}
+                                maxLength={64}
                               />
                               {touched[fieldName] && errors[fieldName] && (
                                 <Form.Control.Feedback

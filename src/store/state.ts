@@ -7,6 +7,7 @@ export type AuthState = {
   user: IUser | null;
   inProgress: boolean;
   uiSettings: WebUISettings;
+  debugMode?: boolean;
 };
 
 export type AppState = {

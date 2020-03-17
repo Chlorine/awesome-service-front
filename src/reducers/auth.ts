@@ -23,6 +23,9 @@ export const authReducer = produce(
       case '@auth/toggleAuthInProgress':
         draft.inProgress = false;
         break;
+      case '@auth/enableDebugMode':
+        draft.debugMode = true;
+        break;
     }
 
     return draft;

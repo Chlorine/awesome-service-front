@@ -35,6 +35,8 @@ export type Props = {
   gender?: DaDataGender;
   suggestionNote?: string;
   namePartRegexp?: RegExp;
+  debugMode?: boolean;
+  maxLength?: number;
 };
 
 declare type State = {
@@ -299,7 +301,7 @@ class DaDataInput extends React.Component<Props, State> {
       stats,
     } = this.state;
 
-    const { placeholder, disabled } = this.props;
+    const { placeholder, disabled, debugMode, maxLength } = this.props;
 
     if (this.props.className) {
       classNames.push(this.props.className);
@@ -313,6 +315,7 @@ class DaDataInput extends React.Component<Props, State> {
             disabled={disabled}
             placeholder={placeholder || ''}
             value={query}
+            maxLength={maxLength}
             name={this.props.name}
             ref={this.inputRef}
             onChange={this.onInputChange}
@@ -348,14 +351,16 @@ class DaDataInput extends React.Component<Props, State> {
           suggestions.length > 0 && (
             <div className="react-dadata__suggestions">
               <div className="react-dadata__suggestion-note">
-                <div>
-                  <small>
-                    <Badge variant="secondary" className="pt-1 pb-1 mb-1">
-                      {stats.loadingTime.toFixed(0)} ms |{' '}
-                      {stats.executionTime.toFixed(2)} ms | {stats.source}
-                    </Badge>
-                  </small>
-                </div>
+                {debugMode && (
+                  <div>
+                    <small>
+                      <Badge variant="secondary" className="pt-1 pb-1 mb-1">
+                        {stats.loadingTime.toFixed(0)} ms |{' '}
+                        {stats.executionTime.toFixed(2)} ms | {stats.source}
+                      </Badge>
+                    </small>
+                  </div>
+                )}
                 {this.props.suggestionNote ||
                   'Выберите вариант или продолжите ввод'}
               </div>

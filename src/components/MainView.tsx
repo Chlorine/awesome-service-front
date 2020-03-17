@@ -20,6 +20,7 @@ import './MainView.scss';
 import { CurrentBreakpoint } from './common';
 import { Utils } from '../utils';
 import ShareLinkModal from './common/ShareLinkModal';
+import { Actions as AuthActions } from '../actions/auth';
 
 const mapStateToProps = (state: AppState) => {
   return {
@@ -29,7 +30,9 @@ const mapStateToProps = (state: AppState) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
-  return {};
+  return {
+    authActions: bindActionCreators(AuthActions, dispatch),
+  };
 };
 
 declare type Props = ReturnType<typeof mapStateToProps> &
@@ -245,6 +248,12 @@ class MainView extends React.Component<Props, State> {
           <ShareLinkModal
             visible={shareLinkModalVisible}
             handleClose={() => this.setState({ shareLinkModalVisible: false })}
+            handleEnableDebugMode={() => {
+              if (!this.props.auth.debugMode) {
+                console.log('debug mode enabled :)');
+                this.props.authActions.enableDebugMode();
+              }
+            }}
           />
           <Container fluid={true} className="mt-3 mb-3">
             {this.props.children}

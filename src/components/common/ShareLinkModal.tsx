@@ -10,15 +10,18 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 export type Props = {
   visible: boolean;
   handleClose: () => void;
+  handleEnableDebugMode: () => void;
 } & WithTranslation;
 
 declare type State = {
   qrCodeValue: string;
+  clicks: number;
 };
 
 class ShareLinkModal extends React.Component<Props, State> {
   state: State = {
     qrCodeValue: window.location.origin,
+    clicks: 0,
   };
 
   onCancel = () => {
@@ -31,6 +34,7 @@ class ShareLinkModal extends React.Component<Props, State> {
     snapshot?: any,
   ): void {
     if (this.props.visible && this.props.visible !== prevProps.visible) {
+      this.setState({ clicks: 0 });
       this.performFunnyPresentation().catch(err => console.error);
     }
   }
@@ -38,6 +42,14 @@ class ShareLinkModal extends React.Component<Props, State> {
   async performFunnyPresentation(): Promise<void> {
     await Utils.delay(15);
   }
+
+  onQRCodeClick = () => {
+    this.setState({ clicks: this.state.clicks + 1 }, () => {
+      if (this.state.clicks > 5) {
+        this.props.handleEnableDebugMode();
+      }
+    });
+  };
 
   render() {
     const { visible, t } = this.props;
@@ -62,7 +74,10 @@ class ShareLinkModal extends React.Component<Props, State> {
           </Row>
           <Row className="pb-3 pt-2">
             <Col sm={12} className="d-flex align-items-center flex-column">
-              <div className="border rounded shadow p-2">
+              <div
+                className="border rounded shadow p-2"
+                onClick={this.onQRCodeClick}
+              >
                 <QRCode
                   value={qrCodeValue}
                   size={180}

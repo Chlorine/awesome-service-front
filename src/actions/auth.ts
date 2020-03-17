@@ -22,7 +22,15 @@ export type ToggleAuthInProgress = {
   inProgress: boolean;
 };
 
-export type ActionType = LoginComplete | LogoutComplete | ToggleAuthInProgress;
+export type EnableDebugMode = {
+  type: '@auth/enableDebugMode';
+};
+
+export type ActionType =
+  | LoginComplete
+  | LogoutComplete
+  | ToggleAuthInProgress
+  | EnableDebugMode;
 
 export const Actions = {
   loginComplete: (
@@ -57,4 +65,11 @@ export const Actions = {
       });
     };
   },
+  enableDebugMode: () => {
+    return (dispatch: Dispatch<ActionType>) => {
+      dispatch({
+        type: '@auth/enableDebugMode',
+      });
+    };
+  }
 };

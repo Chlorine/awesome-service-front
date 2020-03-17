@@ -54,7 +54,7 @@ class Page01_Welcome extends React.Component<Props, State> {
   };
 
   render() {
-    const { t, visitorInfo } = this.props;
+    const { t, visitorInfo, auth } = this.props;
 
     return (
       <>
@@ -69,6 +69,7 @@ class Page01_Welcome extends React.Component<Props, State> {
             <VisitorRegForm
               handleSubmit={this.onSubmitRegForm}
               initialValues={visitorInfo.baseInfo}
+              debugMode={auth.debugMode}
             />
           </Col>
         </Row>
