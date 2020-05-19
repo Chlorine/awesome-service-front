@@ -5,10 +5,12 @@ export const DEV_API_HOSTNAME = window.location.hostname;
 
 // https://developer.mozilla.org/ru/docs/Web/API/Fetch_API/Using_Fetch
 
+// `https://api.${window.location.hostname}/api`
+
 export class ServerAPIBase {
   static URL =
     process.env.NODE_ENV === 'production'
-      ? `https://api.${window.location.hostname}/api`
+      ? `https://api.cloudtickets.io/api`
       : `http://${DEV_API_HOSTNAME}:${DEV_API_PORT}/api`;
 
   async executeRequest(
