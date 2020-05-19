@@ -26,6 +26,7 @@ const mapStateToProps = (state: AppState) => {
   return {
     visitorInfo: state.visitorInfo,
     auth: state.auth,
+    eventInfo: state.eventInfo,
   };
 };
 
@@ -88,7 +89,7 @@ class Page03_QRCode extends React.Component<Props, State> {
 
       const { visitor } = await api.events.exec('registerEventVisitor', {
         sourceType: 'fast-track',
-        eventId: '5eb826dd79c31429084b0c6a',
+        eventId: this.props.eventInfo.event!.id,
         visitor: {
           lastName,
           firstName,
@@ -205,7 +206,7 @@ class Page03_QRCode extends React.Component<Props, State> {
               </div>
               <div className="pt-5">
                 <Button variant="secondary" onClick={this.getQRCode}>
-                  {t('page03.failure.btnRetryCaption')}
+                  {t('common.failure.btnRetryCaption')}
                 </Button>
               </div>
             </Col>
