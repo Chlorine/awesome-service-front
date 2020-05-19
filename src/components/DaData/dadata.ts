@@ -1,9 +1,10 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import * as _ from 'lodash';
-import { GenericObject } from '../../common-interfaces/common-front';
+import { GenericObject } from '../../back/common';
 import { DaDataFioCache } from './dadata-cache';
 import { isFioRequest } from './dadata-fio';
-import { ServerAPI } from '../../server-api';
+
+// import api from '../../back/server-api';
 
 import {
   DaDataFio,
@@ -12,7 +13,9 @@ import {
   DaDataNamePart,
   DaDataSuggestion,
   DaDataSuggestionsSource,
-} from '../../common-interfaces/common-dadata';
+} from '../../back/common/dadata';
+
+import { ServerAPIBase } from '../../back/server-api-base';
 
 export type DaDataApiName = 'fio' | 'address';
 
@@ -102,7 +105,7 @@ export class DaDataApi {
           count: undefined, // не отправляем; по умолч. 10
         };
 
-        if(q.length < 5) {
+        if (q.length < 5) {
           this.throttledBeginFetch('fio', req);
         } else {
           this.debouncedBeginFetch('fio', req);
@@ -124,8 +127,12 @@ export class DaDataApi {
 
     this.xhr = new XMLHttpRequest();
 
-    let url = USE_OWN_BACKEND ? ServerAPI.URL : 'https://suggestions.dadata.ru';
-    url += `/suggestions/api/4_1/rs/suggest/${api}`;
+    let url = `https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/${api}`;
+
+    if (USE_OWN_BACKEND) {
+      url = ServerAPIBase.URL + '/execute';
+      params = { ...params, action: 'getDaDataFioSuggestions' };
+    }
 
     this.xhr.open('POST', url);
 

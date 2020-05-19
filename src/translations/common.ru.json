@@ -11,7 +11,8 @@
           "gotIt": "Понятно",
           "startOver": "Начать сначала",
           "cancel": "Отмена",
-          "close": "Закрыть"
+          "close": "Закрыть",
+          "register": "Зарегистрироваться"
         },
         "messages": {
           "pleaseWait": "Пожалуйста, подождите..."
@@ -20,6 +21,11 @@
         "shareLinkModal": {
           "title": "Ссылка на этот сайт",
           "subTitle": "Сканируйте QR-код для перехода по ссылке"
+        },
+        "failure": {
+          "oops": "Ой!",
+          "somethingWrong": "Что-то пошло не так...",
+          "btnRetryCaption": "Повторить запрос"
         }
       },
       "formErrors": {

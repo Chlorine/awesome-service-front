@@ -12,9 +12,9 @@ import { AppState } from '../store/state';
 // eslint-disable-next-line
 import { history } from '../store';
 
-// eslint-disable-next-line
-import serverApi, { ServerAPI } from '../server-api';
 import { WSHelper } from '../server-ws';
+
+// import api from '../back/server-api';
 
 import './MainView.scss';
 import { CurrentBreakpoint } from './common';
@@ -26,6 +26,7 @@ const mapStateToProps = (state: AppState) => {
   return {
     auth: state.auth,
     router: state.router,
+    eventInfo: state.eventInfo,
   };
 };
 
@@ -76,6 +77,25 @@ class MainView extends React.Component<Props, State> {
     this.wsHelper.subscribeTo('infoEvent', ({ event }) => {
       //this.props.infoEventsActions.newEventReceived(event),
     });
+
+    /////////////////////
+
+    this.testServerApi()
+      .then(() => console.log('testServerApi finished'))
+      .catch(err => console.error(`testServerApi failed ${err}`));
+
+    //////////////////////
+  }
+
+  async testServerApi() {
+    try {
+      // let res1 = await _serverApi.executeRequest({ action: 'doSomethingElse' });
+      // await api.core.exec('doSomethingElse', { incomingToken: 'vvv4' });
+      // await _serverApi.exec('users', 'requestPasswordReset', {});
+      // console.log('testServerApi: done');
+    } catch (err) {
+      console.error(`CATCH in testServerApi: ${err}`);
+    }
   }
 
   componentWillUnmount() {
@@ -120,7 +140,7 @@ class MainView extends React.Component<Props, State> {
   }
 
   renderFooter() {
-    const { t } = this.props;
+    const { t, eventInfo } = this.props;
 
     return (
       <footer className="ts-nice-footer py-1 fixed-bottom">
@@ -139,24 +159,22 @@ class MainView extends React.Component<Props, State> {
                   </a>
                 </small>
               </div>
-              <div style={{ lineHeight: '110%' }}>
-                <small>
-                  <button
-                    className="link-button link-like"
-                    onClick={() =>
-                      this.setState({ shareLinkModalVisible: true })
-                    }
-                  >
-                    <i className="fa fa-share" />
-                  </button>
-                </small>
-              </div>
+              {!!eventInfo.event && (
+                <div style={{ lineHeight: '110%' }}>
+                  <small>
+                    <button
+                      className="link-button link-like"
+                      onClick={() =>
+                        this.setState({ shareLinkModalVisible: true })
+                      }
+                    >
+                      <i className="fa fa-share" />
+                    </button>
+                  </small>
+                </div>
+              )}
             </Col>
           </Row>
-
-          {/*<div style={{ lineHeight: '110%' }} className="float-right">*/}
-          {/*  Пыщь поделиццо*/}
-          {/*</div>*/}
         </Container>
       </footer>
     );
@@ -183,11 +201,17 @@ class MainView extends React.Component<Props, State> {
 
   render() {
     const { language, shareLinkModalVisible } = this.state;
-    const { t } = this.props;
+    const { t, eventInfo } = this.props;
+
+    let brandLinkUrl = '/';
+    if (eventInfo.event) {
+      brandLinkUrl = `/start/${eventInfo.event.id}`;
+    }
 
     const searchPrefix = '?redirectTo=';
     const { location } = this.props.router;
 
+    //// для подкладной морды
     if (
       location &&
       location.pathname === '/' &&
@@ -196,6 +220,7 @@ class MainView extends React.Component<Props, State> {
     ) {
       return <Redirect to={location.search.substring(searchPrefix.length)} />;
     }
+    ////
 
     return (
       <div className="d-flex flex-column">
@@ -207,7 +232,7 @@ class MainView extends React.Component<Props, State> {
             collapseOnSelect={true}
             className="border-bottom pt-1 pb-1"
           >
-            <LinkContainer exact to={'/'}>
+            <LinkContainer exact to={brandLinkUrl}>
               <Navbar.Brand>
                 <span className="text-info mr-1">
                   <i className="fa fa-id-badge" />
@@ -247,6 +272,7 @@ class MainView extends React.Component<Props, State> {
         <main className="ts-nice-main flex-fill">
           <ShareLinkModal
             visible={shareLinkModalVisible}
+            eventId={eventInfo.event?.id}
             handleClose={() => this.setState({ shareLinkModalVisible: false })}
             handleEnableDebugMode={() => {
               if (!this.props.auth.debugMode) {

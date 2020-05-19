@@ -8,11 +8,6 @@
         "repeatModal": {
           "text": "Повторить ввод данных?",
           "btnOkCaption": "Повторить"
-        },
-        "failure": {
-          "oops": "Ой!",
-          "somethingWrong": "Что-то пошло не так...",
-          "btnRetryCaption": "Повторить запрос"
         }
       }
     }

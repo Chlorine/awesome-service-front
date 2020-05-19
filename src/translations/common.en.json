@@ -11,7 +11,8 @@
           "gotIt": "Got it",
           "startOver": "Start over",
           "cancel": "Cancel",
-          "close": "Close"
+          "close": "Close",
+          "register": "Register now"
         },
         "messages": {
           "pleaseWait": "Please, wait..."
@@ -20,6 +21,11 @@
         "shareLinkModal": {
           "title": "Link to this site",
           "subTitle": "Scan QR code to open the link"
+        },
+        "failure": {
+          "oops": "Oops!",
+          "somethingWrong": "Something went wrong...",
+          "btnRetryCaption": "Try again"
         }
       },
       "formErrors": {

@@ -8,11 +8,6 @@
         "repeatModal": {
           "text": "Would you like to repeat data entry?",
           "btnOkCaption": "Repeat"
-        },
-        "failure": {
-          "oops": "Oops!",
-          "somethingWrong": "Something went wrong...",
-          "btnRetryCaption": "Try again"
         }
       }
     }

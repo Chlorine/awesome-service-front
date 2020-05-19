@@ -11,6 +11,9 @@ import yup_en from './translations/yup.en.json';
 import common_ru from './translations/common.ru.json';
 import common_en from './translations/common.en.json';
 
+import page00_ru from './translations/00-Start.ru.json';
+import page00_en from './translations/00-Start.en.json';
+
 import page01_ru from './translations/01-Welcome.ru.json';
 import page01_en from './translations/01-Welcome.en.json';
 
@@ -26,6 +29,8 @@ const resources = _.merge(
   yup_en,
   common_ru,
   common_en,
+  page00_ru,
+  page00_en,
   page01_ru,
   page01_en,
   page02_ru,

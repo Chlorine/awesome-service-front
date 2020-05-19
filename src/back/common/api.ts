@@ -1,32 +1,30 @@
-import { MinimalVisitorInfo } from './common-front';
-import { DaDataFio, DaDataFioRequest, SuggestionsResponse } from './common-dadata';
+import { DaDataFio, DaDataFioRequest, SuggestionsResponse } from './dadata';
 
-declare type NoParams = {};
-declare type OnlySuccess = {};
-
+/**
+ * "Общие" методы API системы
+ */
 export type ApiActions = {
+  /**
+   * Тест #1
+   */
   doSomething: {
-    params: NoParams;
+    params: {};
     results: {
       code: number;
     };
   };
+  /**
+   * Тест #2
+   */
   doSomethingElse: {
     params: {
       incomingToken: string;
     };
-    results: OnlySuccess;
+    results: {};
   };
-  registerVisitor: {
-    params: {
-      visitor: MinimalVisitorInfo;
-      phone: string;
-      email: string;
-    };
-    results: {
-      visitorId: string;
-    };
-  };
+  /**
+   * Получить подсказку для ввода ФИО
+   */
   getDaDataFioSuggestions: {
     params: DaDataFioRequest;
     results: SuggestionsResponse<DaDataFio>;

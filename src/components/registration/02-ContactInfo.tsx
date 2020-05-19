@@ -4,7 +4,7 @@ import { Button, Col, Row, Form } from 'react-bootstrap';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { Redirect } from 'react-router';
+import { Redirect, RouteComponentProps } from 'react-router';
 
 import { history } from '../../store';
 import { AppState } from '../../store/state';
@@ -22,6 +22,7 @@ const mapStateToProps = (state: AppState) => {
   return {
     visitorInfo: state.visitorInfo,
     auth: state.auth,
+    eventInfo: state.eventInfo,
   };
 };
 
@@ -33,7 +34,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 
 declare type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> &
-  WithTranslation;
+  WithTranslation &
+  RouteComponentProps<{ eventId?: string }>;
 
 declare type State = {
   explainModalVisible: boolean;
@@ -60,6 +62,7 @@ class Page02_ContactInfo extends React.Component<Props, State> {
       email,
       phone,
       phoneCountry,
+      this.props.eventInfo.event?.id,
     );
   };
 
@@ -69,13 +72,18 @@ class Page02_ContactInfo extends React.Component<Props, State> {
     );
   };
 
+  get goToStartUrl(): string {
+    const eventId = this.props.match.params.eventId;
+    return eventId ? `/start/${eventId}` : '/start';
+  }
+
   render() {
     const { explainModalVisible } = this.state;
     const { visitorInfo, t } = this.props;
     const { email, phone, phoneCountry, wantsToShareContacts } = visitorInfo;
 
     if (!isVisitorInfoStateNotEmpty(visitorInfo)) {
-      return <Redirect to={'/welcome'} />;
+      return <Redirect to={this.goToStartUrl} />;
     }
 
     return (
@@ -166,6 +174,7 @@ class Page02_ContactInfo extends React.Component<Props, State> {
                     '',
                     '',
                     DefaultPhoneCountry,
+                    this.props.eventInfo.event?.id,
                   )
                 }
               >

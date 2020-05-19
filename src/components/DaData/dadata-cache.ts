@@ -1,8 +1,8 @@
 import {
   DaDataFioSuggestion,
   DaDataGender,
-  DaDataNamePart,
-} from '../../common-interfaces/common-dadata';
+  DaDataNamePart
+} from '../../back/common/dadata';
 
 export class DaDataFioCache {
   private items: { [key: string]: DaDataFioSuggestion[] } = {};

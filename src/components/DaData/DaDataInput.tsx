@@ -10,7 +10,7 @@ import {
   DaDataGender,
   DaDataNamePart,
   DaDataSuggestion,
-} from '../../common-interfaces/common-dadata';
+} from '../../back/common/dadata';
 
 export type Props = {
   placeholder?: string;

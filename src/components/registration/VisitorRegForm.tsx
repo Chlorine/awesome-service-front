@@ -19,7 +19,7 @@ import {
   DaDataFioSuggestion,
   DaDataGender,
   DaDataNamePart,
-} from '../../common-interfaces/common-dadata';
+} from '../../back/common/dadata';
 
 export type Props = {
   handleSubmit: (visitorInfo: MinimalVisitorInfo) => Promise<void>;

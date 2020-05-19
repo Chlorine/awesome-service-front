@@ -14,11 +14,13 @@ import { Col, Row } from 'react-bootstrap';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { Utils } from '../../utils';
 import { isVisitorInfoStateNotEmpty } from '../../store/visitor-info-state';
+import { Redirect, RouteComponentProps } from 'react-router';
 
 const mapStateToProps = (state: AppState) => {
   return {
     visitorInfo: state.visitorInfo,
     auth: state.auth,
+    eventInfo: state.eventInfo,
   };
 };
 
@@ -30,7 +32,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 
 declare type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> &
-  WithTranslation;
+  WithTranslation &
+  RouteComponentProps<{ eventId?: string }>;
 
 declare type State = {};
 
@@ -50,11 +53,24 @@ class Page01_Welcome extends React.Component<Props, State> {
 
   onSubmitRegForm = async (visitor: MinimalVisitorInfo) => {
     await Utils.delay(50);
-    this.props.visitorInfoActions.baseInfoSubmitted(visitor);
+    this.props.visitorInfoActions.baseInfoSubmitted(
+      visitor,
+      this.props.eventInfo.event?.id,
+    );
   };
 
+  get goToStartUrl(): string {
+    const eventId = this.props.match.params.eventId;
+    return eventId ? `/start/${eventId}` : '/start';
+  }
+
   render() {
-    const { t, visitorInfo, auth } = this.props;
+    const { t, visitorInfo, auth, eventInfo } = this.props;
+    const { event } = eventInfo;
+
+    if (!event) {
+      return <Redirect to={this.goToStartUrl} />;
+    }
 
     return (
       <>

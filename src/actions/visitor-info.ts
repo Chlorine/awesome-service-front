@@ -42,14 +42,14 @@ export type ActionType =
   | LoadFromLocalStorage;
 
 export const Actions = {
-  baseInfoSubmitted: (visitor: MinimalVisitorInfo) => {
+  baseInfoSubmitted: (visitor: MinimalVisitorInfo, eventId?: string) => {
     return (dispatch: Dispatch<ActionType | CallHistoryMethodAction>) => {
       dispatch({
         type: '@visitorInfo/baseInfoSubmitted',
         visitor,
       });
 
-      dispatch(routerPush('/contact-info'));
+      dispatch(routerPush(`/contact-info/${eventId}`));
     };
   },
 
@@ -66,6 +66,7 @@ export const Actions = {
     email: string,
     phone: string,
     phoneCountry: PhoneCountry,
+    eventId?: string,
   ) => {
     return (dispatch: Dispatch<ActionType | CallHistoryMethodAction>) => {
       dispatch({
@@ -77,17 +78,17 @@ export const Actions = {
         },
       });
 
-      dispatch(routerPush('/get-qr'));
+      dispatch(routerPush(`/get-qr/${eventId}`));
     };
   },
 
-  reset: () => {
+  reset: (currentEventId: string) => {
     return (dispatch: Dispatch<ActionType | CallHistoryMethodAction>) => {
       dispatch({
         type: '@visitorInfo/reset',
       });
 
-      dispatch(routerPush('/welcome'));
+      dispatch(routerPush(`/welcome/${currentEventId}`));
     };
   },
 

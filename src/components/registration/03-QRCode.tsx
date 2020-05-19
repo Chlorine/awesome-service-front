@@ -3,7 +3,7 @@ import { Button, Col, Row, Spinner, Card } from 'react-bootstrap';
 import QRCode from 'qrcode.react';
 import vCardFactory from 'vcards-js';
 import Measure, { ContentRect } from 'react-measure';
-import { Redirect } from 'react-router';
+import { Redirect, RouteComponentProps } from 'react-router';
 
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -15,7 +15,8 @@ import { history } from '../../store';
 
 import TS_LOGO from './../../images/ts_334.png';
 
-import serverApi from '../../server-api';
+import api from '../../back/server-api';
+
 import StartOverConfirmModal from './StartOverConfirmModal';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { PhoneCountries } from '../../common-interfaces/phone-numbers';
@@ -36,7 +37,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 
 declare type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> &
-  WithTranslation;
+  WithTranslation &
+  RouteComponentProps<{ eventId?: string }>;
 
 declare type State = {
   isWorking: boolean;
@@ -70,6 +72,13 @@ class Page03_QRCode extends React.Component<Props, State> {
 
     try {
       const { baseInfo, phone, phoneCountry, email } = visitorInfo;
+      const {
+        lastName,
+        firstName,
+        middleName,
+        companyName,
+        position,
+      } = baseInfo;
 
       let visitorPhone = '';
 
@@ -77,15 +86,24 @@ class Page03_QRCode extends React.Component<Props, State> {
         visitorPhone = `${PhoneCountries[phoneCountry].prefix}${phone}`;
       }
 
-      const { visitorId } = await serverApi.execute('registerVisitor', {
-        visitor: baseInfo,
-        email,
-        phone: visitorPhone,
+      const { visitor } = await api.events.exec('registerEventVisitor', {
+        sourceType: 'fast-track',
+        eventId: '5eb826dd79c31429084b0c6a',
+        visitor: {
+          lastName,
+          firstName,
+          middleName,
+          companyName,
+          position,
+          phone,
+          email,
+        },
+
         __delay: 100,
         __genErr: !'Не удалось сделать хорошую мину при плохой игре',
       });
 
-      console.log(`visitorId: ${visitorId}`);
+      console.log(`visitorId: ${visitor.id}`);
 
       const vCard = vCardFactory();
 
@@ -131,10 +149,15 @@ class Page03_QRCode extends React.Component<Props, State> {
   handleStartOverModalClose = (confirmed: boolean) => {
     this.setState({ startOverModalVisible: false }, () => {
       if (confirmed) {
-        history.push('/welcome');
+        history.push(this.goToStartUrl);
       }
     });
   };
+
+  get goToStartUrl(): string {
+    const eventId = this.props.match.params.eventId;
+    return eventId ? `/start/${eventId}` : '/start';
+  }
 
   render() {
     const {
@@ -148,7 +171,7 @@ class Page03_QRCode extends React.Component<Props, State> {
     const { t, visitorInfo } = this.props;
 
     if (!isVisitorInfoStateNotEmpty(visitorInfo)) {
-      return <Redirect to={'/welcome'} />;
+      return <Redirect to={this.goToStartUrl} />;
     }
 
     return (
@@ -171,11 +194,11 @@ class Page03_QRCode extends React.Component<Props, State> {
               <div>
                 <h3>
                   <i className="fa fa-frown-o text-danger" />{' '}
-                  {t('page03.failure.oops')}
+                  {t('common.failure.oops')}
                 </h3>
               </div>
               <div>
-                <p>{t('page03.failure.somethingWrong')}</p>
+                <p>{t('common.failure.somethingWrong')}</p>
               </div>
               <div>
                 <small className="text-muted">{errorMsg}</small>

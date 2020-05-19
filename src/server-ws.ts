@@ -1,8 +1,11 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import io from 'socket.io-client';
 
-import { DEV_API_HOSTNAME as DEBUG_HOSTNAME, DEV_API_PORT as DEBUG_PORT } from './server-api';
-import { WSMessages, WSMessagePayload } from './common-interfaces/common-front';
+import {
+  DEV_API_HOSTNAME as DEBUG_HOSTNAME,
+  DEV_API_PORT as DEBUG_PORT,
+} from './back/server-api-base';
+import { WSMessages, WSMessagePayload } from './back/common/ws';
 
 declare type Socket = SocketIOClient.Socket;
 
@@ -57,10 +60,7 @@ class ServerWS extends EventEmitter {
     this.socket.on('connect', () => this.emit('connect'));
     this.socket.on('disconnect', () => this.emit('disconnect'));
 
-    this.addSocketListeners([
-      'updateStats',
-      'infoEvent',
-    ]);
+    this.addSocketListeners(['updateStats', 'infoEvent']);
   }
 
   private addSocketListeners<WSM extends keyof WSMessages>(msgTypes: WSM[]) {

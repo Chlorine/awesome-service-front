@@ -11,6 +11,7 @@ import { configureStore, history } from './store';
 import MainView from './components/MainView';
 import NotFound from './components/NotFound';
 
+import Page00_Start from './components/registration/00-Start';
 import Page01_Welcome from './components/registration/01-Welcome';
 import Page02_ContactInfo from './components/registration/02-ContactInfo';
 import Page03_QRCode from './components/registration/03-QRCode';
@@ -29,11 +30,21 @@ const App: React.FC = () => {
               <Route
                 path="/"
                 exact
-                component={() => <Redirect to={'/welcome'} />}
+                component={() => <Redirect to={'/start'} />}
               />
-              <Route path="/welcome" component={Page01_Welcome} />
-              <Route path="/contact-info" component={Page02_ContactInfo} />
-              <Route path="/get-qr" component={Page03_QRCode} />
+
+              {/* будем таскать везде eventId чтобы успешнее отрабатывать F5 */}
+
+              <Route path="/start/:eventId?" component={Page00_Start} />
+
+              <Route path="/welcome/:eventId?" component={Page01_Welcome} />
+
+              <Route
+                path="/contact-info/:eventId?"
+                component={Page02_ContactInfo}
+              />
+
+              <Route path="/get-qr/:eventId?" component={Page03_QRCode} />
 
               <Route component={NotFound} />
             </Switch>

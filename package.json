@@ -77,7 +77,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "copy-common-defs": "..\\_awesome-service-front-copy-common.bat"
+    "temp-copy-common-defs": "__copy-common.bat"
   },
   "eslintConfig": {
     "extends": "react-app"

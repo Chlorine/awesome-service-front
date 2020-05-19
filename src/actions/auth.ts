@@ -4,12 +4,12 @@ import {
   CallHistoryMethodAction,
 } from 'connected-react-router';
 
-import { IUser, WebUISettings } from '../common-interfaces/common-front';
+import { IUserInfo, WebUISettings } from '../back/common/users';
 import { LocationDescriptorObject } from 'history';
 
 export type LoginComplete = {
   type: '@auth/loginComplete';
-  user: IUser;
+  user: IUserInfo;
   uiSettings: WebUISettings;
 };
 
@@ -34,7 +34,7 @@ export type ActionType =
 
 export const Actions = {
   loginComplete: (
-    user: IUser,
+    user: IUserInfo,
     uiSettings: WebUISettings,
     pathToRedirect: LocationDescriptorObject,
   ) => {

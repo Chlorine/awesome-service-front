@@ -11,6 +11,7 @@ export type Props = {
   visible: boolean;
   handleClose: () => void;
   handleEnableDebugMode: () => void;
+  eventId?: string;
 } & WithTranslation;
 
 declare type State = {
@@ -34,8 +35,13 @@ class ShareLinkModal extends React.Component<Props, State> {
     snapshot?: any,
   ): void {
     if (this.props.visible && this.props.visible !== prevProps.visible) {
-      this.setState({ clicks: 0 });
-      this.performFunnyPresentation().catch(err => console.error);
+      const link = window.location.origin + `/start/${this.props.eventId}`;
+      console.log('link', link);
+      this.setState({
+        qrCodeValue: link,
+        clicks: 0,
+      });
+      this.performFunnyPresentation().catch(console.error);
     }
   }
 
