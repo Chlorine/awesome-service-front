@@ -1,7 +1,7 @@
 import { DaDataFio, DaDataFioRequest, SuggestionsResponse } from './dadata';
 
 /**
- * "Общие" методы API системы
+ * "Общие" методы API системы (target === 'core')
  */
 export type ApiActions = {
   /**

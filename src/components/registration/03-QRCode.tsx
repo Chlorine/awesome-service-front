@@ -96,7 +96,7 @@ class Page03_QRCode extends React.Component<Props, State> {
           middleName,
           companyName,
           position,
-          phone,
+          phone: visitorPhone,
           email,
         },
 
